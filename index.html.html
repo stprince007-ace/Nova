@@ -1,0 +1,1853 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="NOVA"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#080810"/>
+<title>NOVA — Your Study Companion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Orbitron:wght@700;900&display=swap');
+
+/* ── CSS VARIABLES (default = Liya theme) ── */
+:root {
+  --bg:#080810; --surface:#10101e; --surface2:#16162a; --surface3:#1e1e35;
+  --a1:#ff6b9d; --a2:#8b5cf6; --a3:#06b6d4; --a4:#fbbf24;
+  --success:#10b981; --text:#f0f0ff; --soft:#8888aa;
+  --glow1:rgba(255,107,157,0.4); --glow2:rgba(139,92,246,0.4); --glow3:rgba(6,182,212,0.4);
+  --radius:18px;
+}
+/* Amirah theme */
+.theme-amirah {
+  --bg:#050d0a; --surface:#0a1810; --surface2:#0f2018; --surface3:#162b20;
+  --a1:#4ade80; --a2:#b8860b; --a3:#86efac; --a4:#fbbf24;
+  --glow1:rgba(74,222,128,0.4); --glow2:rgba(184,134,11,0.4); --glow3:rgba(134,239,172,0.4);
+}
+/* Riri theme */
+.theme-riri {
+  --bg:#0d0a00; --surface:#1a1500; --surface2:#221c00; --surface3:#2a2200;
+  --a1:#facc15; --a2:#a855f7; --a3:#fb923c; --a4:#86efac;
+  --glow1:rgba(250,204,21,0.4); --glow2:rgba(168,85,247,0.4); --glow3:rgba(251,146,60,0.4);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;max-height:100%;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg); color:var(--text);
+  height:100dvh; max-height:100dvh;
+  display:flex; flex-direction:column;
+  overflow:hidden; transition:background 0.6s ease;
+}
+
+/* STARFIELD */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--d,3s) infinite var(--delay,0s);}
+@keyframes twinkle{0%,100%{opacity:0.1;}50%{opacity:var(--op,0.6);}}
+
+/* HEADER */
+header{
+  position:relative;z-index:10;
+  background:linear-gradient(180deg,rgba(8,8,16,0.98),rgba(8,8,16,0.85));
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  padding:10px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0; gap:8px;
+}
+.logo-wrap{display:flex;align-items:center;gap:10px;min-width:0;}
+.nova-orb{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle at 35% 35%,var(--a1),var(--a2) 60%,var(--a3));
+  box-shadow:0 0 16px var(--glow1),0 0 32px var(--glow2);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  animation:orbPulse 3s ease-in-out infinite;
+  transition:background 0.6s, box-shadow 0.6s;
+}
+@keyframes orbPulse{0%,100%{box-shadow:0 0 16px var(--glow1),0 0 32px var(--glow2);}50%{box-shadow:0 0 28px var(--glow1),0 0 56px var(--glow2);}}
+.logo{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900;
+  background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.tagline{font-size:0.6rem;color:var(--soft);letter-spacing:2px;text-transform:uppercase;}
+.hdr-right{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;}
+.badge{background:var(--surface2);border:1px solid var(--surface3);border-radius:30px;padding:4px 11px;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.badge.live{border-color:rgba(16,185,129,0.4);color:var(--success);animation:livePulse 2s infinite;cursor:pointer;}
+.badge.live.idle-mode{border-color:rgba(100,100,140,0.4);color:var(--soft);animation:none;}
+.badge.gold{border-color:rgba(251,191,36,0.4);color:var(--a4);}
+.badge.fire{border-color:rgba(251,146,60,0.4);color:#fb923c;}
+@keyframes livePulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+.gear-btn,.profile-btn{
+  background:var(--surface2);border:1px solid rgba(255,255,255,0.08);
+  border-radius:50%;width:32px;height:32px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:0.95rem;transition:all 0.2s;
+}
+.gear-btn:hover{transform:rotate(30deg);border-color:var(--a1);}
+.profile-btn:hover{border-color:var(--a1);}
+
+/* LAYOUT */
+.app{display:flex;flex:1;min-height:0;position:relative;z-index:1;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{
+  width:200px;min-width:200px;background:rgba(16,16,30,0.92);
+  border-right:1px solid rgba(255,255,255,0.05);
+  display:flex;flex-direction:column;padding:10px 0;overflow-y:auto;min-height:0;
+}
+.sidebar::-webkit-scrollbar{width:3px;}
+.sidebar::-webkit-scrollbar-thumb{background:#2a2a45;border-radius:10px;}
+.s-label{font-size:0.58rem;letter-spacing:2px;color:var(--soft);text-transform:uppercase;padding:8px 12px 4px;font-weight:800;}
+.s-btn{
+  width:calc(100% - 10px);margin:1px 5px;background:transparent;border:none;border-left:3px solid transparent;
+  border-radius:10px;padding:8px 10px;text-align:left;cursor:pointer;
+  display:flex;align-items:center;gap:9px;
+  font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:600;color:var(--soft);transition:all 0.2s;
+}
+.s-btn:hover,.s-btn.active{background:rgba(255,255,255,0.05);color:var(--text);border-left-color:var(--a1);}
+.s-btn .ico{font-size:0.95rem;width:20px;text-align:center;}
+.s-div{height:1px;background:rgba(255,255,255,0.05);margin:6px 10px;}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+
+/* STATUS BAR */
+.nova-status{
+  background:rgba(16,16,30,0.8);border-bottom:1px solid rgba(255,255,255,0.05);
+  padding:6px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.nova-state{display:flex;align-items:center;gap:8px;font-size:0.78rem;font-weight:700;}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--soft);transition:background 0.3s;}
+.sdot.ready{background:var(--success);}
+.sdot.thinking{background:var(--a4);animation:livePulse 0.8s infinite;}
+.sdot.speaking{background:var(--a3);animation:livePulse 0.6s infinite;}
+.sdot.listening{background:var(--a1);animation:livePulse 0.5s infinite;}
+.mode-pills{display:flex;gap:5px;}
+.m-pill{border:none;border-radius:20px;padding:4px 11px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;background:var(--surface2);color:var(--soft);}
+.m-pill.active{background:linear-gradient(135deg,var(--a1),var(--a2));color:white;}
+
+/* CHAT */
+.chat{flex:1;overflow-y:auto;padding:12px 16px 6px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;min-height:0;}
+.chat::-webkit-scrollbar{width:4px;}
+.chat::-webkit-scrollbar-thumb{background:#2a2a45;border-radius:10px;}
+
+/* MESSAGES */
+.msg{display:flex;gap:10px;align-items:flex-start;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.msg.user{flex-direction:row-reverse;}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;}
+.av.nova-av{background:radial-gradient(circle at 35% 35%,var(--a1),var(--a2));box-shadow:0 0 10px var(--glow1);}
+.av.user-av{background:linear-gradient(135deg,var(--a3),var(--a2));}
+.bubble{max-width:78%;padding:11px 15px;border-radius:var(--radius);font-size:0.88rem;line-height:1.65;}
+.bubble.nova-b{background:var(--surface2);border:1px solid rgba(255,255,255,0.06);border-top-left-radius:4px;}
+.bubble.user-b{background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(6,182,212,0.12));border:1px solid rgba(139,92,246,0.3);border-top-right-radius:4px;}
+
+/* RICH CONTENT */
+.step-card{background:rgba(255,255,255,0.04);border-left:3px solid var(--a1);border-radius:0 12px 12px 0;padding:9px 13px;margin:7px 0;}
+.step-label{font-size:0.62rem;font-weight:800;letter-spacing:2px;color:var(--a1);text-transform:uppercase;margin-bottom:4px;}
+.tip-card{background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:11px;padding:9px 13px;margin:7px 0;font-size:0.84rem;}
+.kpop-card{background:linear-gradient(135deg,rgba(255,107,157,0.08),rgba(139,92,246,0.08));border:1px solid rgba(255,107,157,0.22);border-radius:13px;padding:11px 15px;margin:7px 0;font-size:0.83rem;}
+.kpop-card .kh{font-size:0.62rem;font-weight:800;letter-spacing:1.5px;color:var(--a1);text-transform:uppercase;margin-bottom:5px;}
+.det-card{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.18);border-radius:11px;padding:9px 13px;margin:7px 0;font-size:0.84rem;}
+.det-card .dh{font-size:0.62rem;font-weight:800;letter-spacing:1.5px;color:var(--a4);text-transform:uppercase;margin-bottom:4px;}
+.speak-row{display:flex;align-items:center;gap:7px;margin-top:7px;}
+.speak-btn{background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.18);border-radius:20px;padding:3px 9px;font-size:0.7rem;font-weight:700;color:var(--a3);cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:4px;}
+.speak-btn:hover{background:rgba(6,182,212,0.18);}
+.msg-time{font-size:0.62rem;color:var(--soft);}
+.bubble strong{color:var(--a4);}
+.bubble em{color:var(--a3);}
+.bubble ul,.bubble ol{padding-left:16px;}
+.bubble li{margin-bottom:3px;}
+
+/* TYPING */
+.typing-wrap{padding:0 16px 4px;flex-shrink:0;display:none;}
+.typing-wrap.show{display:flex;align-items:center;gap:10px;}
+.typing-dots{display:flex;gap:4px;padding:10px 14px;background:var(--surface2);border-radius:16px;border-top-left-radius:3px;}
+.dot{width:6px;height:6px;border-radius:50%;animation:dotB 1.3s infinite;}
+.dot:nth-child(1){background:var(--a1);}
+.dot:nth-child(2){background:var(--a2);animation-delay:0.2s;}
+.dot:nth-child(3){background:var(--a3);animation-delay:0.4s;}
+@keyframes dotB{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-7px);}}
+
+/* VOICE ORB */
+.voice-center{display:flex;flex-direction:column;align-items:center;padding:5px 16px 2px;gap:3px;flex-shrink:0;}
+.orb-wrap{position:relative;width:58px;height:58px;cursor:pointer;}
+.orb-ring{position:absolute;inset:-6px;border-radius:50%;border:2px solid transparent;transition:all 0.3s;}
+.orb-ring.active{border-color:var(--a1);box-shadow:0 0 18px var(--glow1);animation:ringRot 2s linear infinite;}
+@keyframes ringRot{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.orb{width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--a1),var(--a2) 60%,var(--a3));display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;box-shadow:0 0 18px var(--glow1),0 0 36px var(--glow2);transition:all 0.3s;animation:orbPulse 3s ease-in-out infinite;position:relative;z-index:1;}
+.orb:hover{transform:scale(1.07);}
+.orb.listening{animation:listenP 1s ease-in-out infinite;box-shadow:0 0 28px var(--a1),0 0 56px var(--a1);}
+.orb.speaking-orb{animation:speakP 0.6s ease-in-out infinite;box-shadow:0 0 28px var(--a3),0 0 56px var(--a3);}
+@keyframes listenP{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+@keyframes speakP{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+.waveform{display:none;align-items:center;gap:3px;height:20px;}
+.waveform.show{display:flex;}
+.wbar{width:3px;background:var(--a1);border-radius:2px;animation:waveA 0.8s ease-in-out infinite;}
+.wbar:nth-child(1){height:5px;}.wbar:nth-child(2){height:12px;animation-delay:0.1s;}
+.wbar:nth-child(3){height:9px;animation-delay:0.2s;}.wbar:nth-child(4){height:16px;animation-delay:0.3s;}
+.wbar:nth-child(5){height:7px;animation-delay:0.4s;}.wbar:nth-child(6){height:14px;animation-delay:0.5s;}
+.wbar:nth-child(7){height:5px;animation-delay:0.6s;}
+@keyframes waveA{0%,100%{transform:scaleY(1);}50%{transform:scaleY(2);}}
+.orb-hint{font-size:0.64rem;color:var(--soft);font-weight:600;letter-spacing:0.5px;text-align:center;}
+
+/* INPUT AREA */
+.input-area{background:rgba(16,16,30,0.96);border-top:1px solid rgba(255,255,255,0.05);padding:7px 14px 9px;flex-shrink:0;}
+.tool-row{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;}
+.t-btn{background:var(--surface2);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:5px 11px;font-size:0.72rem;font-weight:700;color:var(--soft);cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:4px;}
+.t-btn:hover{background:rgba(255,107,157,0.12);color:var(--a1);border-color:rgba(255,107,157,0.3);}
+.t-btn.rec{background:rgba(255,50,50,0.12);color:#ff6666;border-color:#ff4444;animation:livePulse 1s infinite;}
+.img-prev{display:none;background:var(--surface2);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;padding:7px 11px;margin-bottom:8px;align-items:center;gap:9px;}
+.img-prev.show{display:flex;}
+.img-prev img{height:48px;border-radius:7px;object-fit:cover;}
+.img-rm{background:none;border:none;color:var(--soft);cursor:pointer;font-size:0.95rem;margin-left:auto;}
+.input-row{display:flex;gap:8px;align-items:flex-end;}
+.chat-in{flex:1;background:var(--surface2);border:1.5px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px 14px;font-family:'Nunito',sans-serif;font-size:0.88rem;color:var(--text);resize:none;min-height:42px;max-height:120px;outline:none;line-height:1.5;transition:border-color 0.2s;}
+.chat-in:focus{border-color:var(--a1);}
+.chat-in::placeholder{color:var(--soft);}
+.send-btn{background:linear-gradient(135deg,var(--a1),var(--a2));border:none;border-radius:12px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.05rem;flex-shrink:0;box-shadow:0 3px 14px var(--glow1);transition:all 0.15s;}
+.send-btn:hover{transform:scale(1.07);}
+.send-btn:active{transform:scale(0.94);}
+
+/* RIGHT PANEL */
+.right{width:220px;min-width:220px;background:rgba(16,16,30,0.9);border-left:1px solid rgba(255,255,255,0.05);display:flex;flex-direction:column;overflow-y:auto;padding:12px;gap:12px;min-height:0;}
+.right::-webkit-scrollbar{width:3px;}
+.right::-webkit-scrollbar-thumb{background:#2a2a45;border-radius:10px;}
+.p-card{background:var(--surface2);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:12px;}
+.p-title{font-size:0.64rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--soft);margin-bottom:10px;}
+.prog-item{margin-bottom:9px;}
+.prog-label{display:flex;justify-content:space-between;font-size:0.73rem;font-weight:700;margin-bottom:3px;}
+.prog-bar{height:4px;background:rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:10px;transition:width 0.6s ease;}
+.q-tip{background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.18);border-radius:9px;padding:6px 10px;font-size:0.73rem;line-height:1.5;margin-bottom:6px;cursor:pointer;transition:all 0.2s;color:var(--soft);}
+.q-tip:hover{background:rgba(139,92,246,0.16);color:var(--text);}
+.kpop-panel{background:linear-gradient(135deg,rgba(255,107,157,0.08),rgba(139,92,246,0.08));border:1px solid rgba(255,107,157,0.22);border-radius:14px;padding:12px;cursor:pointer;transition:all 0.2s;}
+.kpop-panel:hover{transform:translateY(-2px);}
+.kp-title{font-size:0.64rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--a1);margin-bottom:8px;}
+.kp-fact{font-size:0.78rem;line-height:1.5;color:var(--text);}
+.kp-refresh{font-size:0.64rem;color:var(--soft);margin-top:7px;text-align:right;}
+.career-row{display:flex;align-items:flex-start;gap:7px;font-size:0.75rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.career-row:last-child{border-bottom:none;}
+.cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+
+/* ACHIEVEMENT */
+.achieve{position:fixed;top:70px;right:16px;background:linear-gradient(135deg,var(--surface2),rgba(42,10,62,0.96));border:2px solid var(--a4);border-radius:16px;padding:14px 18px;z-index:999;transform:translateX(300px);transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);max-width:250px;box-shadow:0 8px 28px rgba(251,191,36,0.25);}
+.achieve.show{transform:translateX(0);}
+.achieve h4{color:var(--a4);font-size:0.68rem;letter-spacing:1px;margin-bottom:5px;}
+.achieve p{font-size:0.86rem;font-weight:700;}
+</style>
+<style>
+
+/* PROFILE SWITCHER */
+.profile-screen{position:fixed;inset:0;background:var(--bg);z-index:800;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:20px;}
+.profile-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900;background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;}
+.profile-sub{font-size:0.82rem;color:var(--soft);text-align:center;letter-spacing:1px;}
+.profile-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;width:100%;max-width:700px;}
+.profile-card{
+  background:var(--surface2);border:2px solid rgba(255,255,255,0.08);
+  border-radius:20px;padding:24px 20px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  transition:all 0.25s;flex:1;min-width:160px;max-width:200px;
+  position:relative;overflow:hidden;
+}
+.profile-card:hover{transform:translateY(-4px);}
+.profile-card.liya{border-color:rgba(255,107,157,0.4);}
+.profile-card.liya:hover{box-shadow:0 12px 32px rgba(255,107,157,0.3);}
+.profile-card.amirah{border-color:rgba(74,222,128,0.4);}
+.profile-card.amirah:hover{box-shadow:0 12px 32px rgba(74,222,128,0.3);}
+.profile-card.riri{border-color:rgba(250,204,21,0.4);}
+.profile-card.riri:hover{box-shadow:0 12px 32px rgba(250,204,21,0.3);}
+.p-avatar{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.2rem;}
+.p-avatar.liya{background:radial-gradient(circle at 35% 35%,#ff9dce,#8b5cf6);}
+.p-avatar.amirah{background:radial-gradient(circle at 35% 35%,#4ade80,#b8860b);}
+.p-avatar.riri{background:radial-gradient(circle at 35% 35%,#facc15,#a855f7);}
+.p-name{font-size:1.1rem;font-weight:800;color:var(--text);}
+.p-desc{font-size:0.72rem;color:var(--soft);text-align:center;line-height:1.5;}
+.p-grade{font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:2px;}
+.p-grade.liya{background:rgba(255,107,157,0.15);color:#ff6b9d;}
+.p-grade.amirah{background:rgba(74,222,128,0.15);color:#4ade80;}
+.p-grade.riri{background:rgba(250,204,21,0.15);color:#facc15;}
+
+/* VOICE LISTEN PROMPT on profile screen */
+.voice-listen-bar{
+  background:var(--surface2);border:1px solid rgba(255,255,255,0.08);
+  border-radius:30px;padding:10px 20px;
+  display:flex;align-items:center;gap:10px;
+  font-size:0.8rem;color:var(--soft);cursor:pointer;
+  transition:all 0.2s;
+}
+.voice-listen-bar:hover{border-color:var(--a1);color:var(--text);}
+.vl-dot{width:8px;height:8px;border-radius:50%;background:var(--soft);}
+.vl-dot.active{background:var(--a1);animation:livePulse 0.8s infinite;}
+
+/* SETTINGS */
+.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;display:none;align-items:center;justify-content:center;backdrop-filter:blur(12px);}
+.settings-overlay.open{display:flex;}
+.settings-box{background:var(--surface2);border:1px solid rgba(255,107,157,0.3);border-radius:22px;padding:24px;max-width:420px;width:92%;max-height:88vh;overflow-y:auto;animation:fadeUp 0.3s ease;}
+.s-sec{border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;margin-top:14px;}
+.s-sec:first-of-type{border-top:none;margin-top:0;padding-top:0;}
+.s-lbl{font-size:0.68rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--soft);margin-bottom:8px;}
+.s-btn-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px;}
+.s-btn{background:var(--surface3);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:7px 12px;font-family:'Nunito',sans-serif;font-size:0.79rem;font-weight:700;color:var(--text);cursor:pointer;transition:all 0.2s;}
+.s-btn:hover{background:rgba(139,92,246,0.18);border-color:var(--a2);}
+.s-btn.primary{background:linear-gradient(135deg,rgba(255,107,157,0.25),rgba(139,92,246,0.25));border-color:rgba(255,107,157,0.35);}
+.s-btn.danger{color:#ff6b6b;border-color:rgba(255,107,107,0.22);}
+.s-btn.danger:hover{background:rgba(255,50,50,0.12);}
+.key-wrap{position:relative;margin-bottom:8px;}
+.key-in{width:100%;background:var(--surface);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px 40px 9px 13px;font-family:'Nunito',sans-serif;font-size:0.82rem;color:var(--text);outline:none;}
+.key-in:focus{border-color:var(--a1);}
+.key-vis{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:0.9rem;color:var(--soft);}
+.toggle-wrap{width:44px;height:24px;background:rgba(255,255,255,0.1);border-radius:12px;cursor:pointer;position:relative;transition:background 0.3s;flex-shrink:0;border:1px solid rgba(255,255,255,0.1);}
+.toggle-wrap.on{background:linear-gradient(135deg,var(--a1),var(--a2));}
+.toggle-knob{position:absolute;top:3px;left:3px;width:16px;height:16px;background:white;border-radius:50%;transition:left 0.3s;box-shadow:0 2px 5px rgba(0,0,0,0.3);}
+.toggle-wrap.on .toggle-knob{left:22px;}
+.copy-msg{display:none;font-size:0.72rem;color:var(--success);margin-top:5px;font-weight:700;}
+.copy-msg.show{display:block;}
+
+/* VOICE PICKER */
+.voice-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.voice-card{
+  background:var(--surface3);border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:10px 12px;cursor:pointer;transition:all 0.2s;
+  font-family:'Nunito',sans-serif;
+}
+.voice-card:hover{background:rgba(255,255,255,0.06);border-color:var(--a1);}
+.voice-card.selected{background:linear-gradient(135deg,rgba(255,107,157,0.18),rgba(139,92,246,0.18));border-color:var(--a1);}
+.vc-name{font-size:0.82rem;font-weight:800;color:var(--text);margin-bottom:2px;}
+.vc-desc{font-size:0.68rem;color:var(--soft);}
+.vc-preview{font-size:0.68rem;color:var(--a3);margin-top:4px;cursor:pointer;font-weight:700;}
+.voice-loading{font-size:0.78rem;color:var(--soft);padding:8px 0;}
+
+/* API OVERLAY */
+.api-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:700;display:none;align-items:center;justify-content:center;backdrop-filter:blur(12px);}
+.api-overlay.open{display:flex;}
+.api-box{background:var(--surface2);border:1px solid rgba(255,107,157,0.4);border-radius:24px;padding:32px;max-width:460px;width:92%;box-shadow:0 20px 56px rgba(255,107,157,0.22);}
+.api-box h2{font-family:'Orbitron',sans-serif;color:var(--a1);font-size:1.2rem;margin-bottom:8px;}
+.api-box p{color:var(--soft);font-size:0.84rem;line-height:1.7;margin-bottom:18px;}
+.api-go{width:100%;background:linear-gradient(135deg,var(--a1),var(--a2));border:none;border-radius:12px;padding:13px;font-family:'Nunito',sans-serif;font-size:0.96rem;font-weight:800;color:white;cursor:pointer;transition:opacity 0.2s;margin-bottom:8px;}
+.api-go:hover{opacity:0.9;}
+.api-skip{width:100%;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:11px;padding:9px;font-family:'Nunito',sans-serif;font-size:0.82rem;color:var(--soft);cursor:pointer;transition:all 0.2s;}
+.api-skip:hover{border-color:var(--soft);color:var(--text);}
+.api-note{font-size:0.68rem;color:var(--soft);margin-top:9px;text-align:center;}
+
+/* MOBILE */
+.mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,16,0.97);border-top:1px solid rgba(255,255,255,0.08);z-index:200;padding-bottom:env(safe-area-inset-bottom);}
+.mob-tabs{display:flex;overflow-x:auto;scrollbar-width:none;}
+.mob-tabs::-webkit-scrollbar{display:none;}
+.mob-tab{flex:0 0 auto;background:transparent;border:none;padding:9px 13px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:'Nunito',sans-serif;font-size:0.58rem;font-weight:700;color:var(--soft);cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;min-width:55px;position:relative;}
+.mob-tab .m-ico{font-size:1.2rem;line-height:1;}
+.mob-tab.active{color:var(--a1);}
+.mob-tab.active::after{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--a1);border-radius:0 0 3px 3px;}
+.mob-fab{display:none;position:fixed;bottom:68px;right:14px;z-index:201;background:linear-gradient(135deg,var(--a1),var(--a2));border:none;border-radius:50%;width:42px;height:42px;font-size:1.2rem;box-shadow:0 4px 18px var(--glow1);cursor:pointer;align-items:center;justify-content:center;transition:transform 0.2s;}
+.mob-fab:active{transform:scale(0.9);}
+.mob-drawer{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);}
+.mob-drawer.open{display:block;}
+.drawer-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:22px 22px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));max-height:74vh;overflow-y:auto;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);}
+.mob-drawer.open .drawer-sheet{transform:translateY(0);}
+.drawer-handle{width:38px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin:0 auto 14px;}
+.drawer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.d-item{background:var(--surface2);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px 5px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:all 0.2s;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;color:var(--soft);text-align:center;}
+.d-item:active{transform:scale(0.94);}
+.d-item.active{background:linear-gradient(135deg,rgba(255,107,157,0.18),rgba(139,92,246,0.18));border-color:rgba(255,107,157,0.35);color:var(--text);}
+.d-item .d-ico{font-size:1.5rem;line-height:1;}
+.d-sec{font-size:0.58rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--soft);padding:10px 3px 4px;grid-column:1/-1;}
+
+@media(max-width:960px){.right{display:none;}}
+@media(max-width:700px){.sidebar{width:48px;min-width:48px;}.s-btn span:not(.ico){display:none;}.s-label,.s-div{display:none;}}
+@media(max-width:540px){
+  body{height:100dvh;max-height:100dvh;}
+  header{padding:7px 12px;}
+  .logo{font-size:1.05rem;}.tagline{display:none;}.nova-orb{width:32px;height:32px;font-size:0.95rem;}
+  .badge.fire{display:none;}.badge{padding:3px 9px;font-size:0.7rem;}
+  .sidebar{display:none;}
+  .app{height:calc(100dvh - 52px);}
+  .nova-status{padding:5px 10px;}.nova-state{font-size:0.72rem;}#stateLabel{display:none;}
+  .m-pill{padding:3px 9px;font-size:0.68rem;}
+  .chat{padding:9px 11px 5px;gap:9px;}
+  .bubble{max-width:91%;font-size:0.85rem;padding:10px 13px;}
+  .voice-center{padding:3px 10px 2px;}
+  .orb-wrap{width:50px;height:50px;}.orb{width:50px;height:50px;font-size:1.25rem;}.orb-ring{inset:-5px;}
+  .input-area{padding:6px 11px calc(58px + env(safe-area-inset-bottom)) 11px;}
+  .tool-row{gap:4px;margin-bottom:6px;}.t-btn{padding:4px 9px;font-size:0.68rem;}
+  .chat-in{font-size:0.85rem;padding:9px 12px;}.send-btn{width:38px;height:38px;}
+  .mob-bar{display:block;}.mob-fab{display:flex;}
+  .achieve{right:8px;left:8px;max-width:none;transform:translateY(-120px);}.achieve.show{transform:translateY(0);}
+  .profile-cards{flex-direction:column;align-items:center;}
+  .profile-card{max-width:280px;width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<!-- PROFILE SWITCHER SCREEN -->
+<div class="profile-screen" id="profileScreen">
+  <div class="nova-orb" style="width:60px;height:60px;font-size:1.8rem;margin-bottom:4px;">✨</div>
+  <div class="profile-title">Hey! Who am I talking to?</div>
+  <div class="profile-sub">TAP YOUR NAME — OR SAY IT OUT LOUD 💜</div>
+  <div class="profile-cards">
+    <div class="profile-card liya" onclick="selectProfile('liya')">
+      <div class="p-avatar liya">👩</div>
+      <div class="p-name">Liya</div>
+      <div class="p-grade liya">11th Grade</div>
+      <div class="p-desc">Future Detective 🔍<br/>Stray Kids & ATEEZ</div>
+    </div>
+    <div class="profile-card amirah" onclick="selectProfile('amirah')">
+      <div class="p-avatar amirah">⚖️</div>
+      <div class="p-name">Bullfrog</div>
+      <div class="p-grade amirah">10th Grade</div>
+      <div class="p-desc">Future Lawyer ⚖️<br/>Onlyoneoff & more</div>
+    </div>
+    <div class="profile-card riri" onclick="selectProfile('riri')">
+      <div class="p-avatar riri">🦕</div>
+      <div class="p-name">Riri</div>
+      <div class="p-grade riri">4th Grade</div>
+      <div class="p-desc">Future Scientist 🔬<br/>Dinosaurs & K-Pop</div>
+    </div>
+  </div>
+  <div class="voice-listen-bar" id="profileVoiceBar" onclick="startProfileListen()">
+    <div class="vl-dot" id="profileVlDot"></div>
+    <span id="profileVlText">Tap to say your name instead</span>
+  </div>
+</div>
+
+<!-- API OVERLAY -->
+<div class="api-overlay" id="apiOverlay">
+  <div class="api-box">
+    <h2>Almost ready! ✨</h2>
+    <p>To unlock my full AI brain, paste your <strong style="color:var(--a1)">OpenAI API key</strong> below.<br/><br/>
+    No key yet? Your dad can grab one free at <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--a3)">platform.openai.com</a>.<br/><br/>
+    It stays right here in your browser — I never send it anywhere. Promise! 🤞</p>
+    <div class="key-wrap">
+      <input type="password" class="key-in" id="apiKeyIn" placeholder="sk- ... paste here"/>
+      <button class="key-vis" id="apiVisBtn" onclick="toggleVis('apiKeyIn','apiVisBtn')">👁️</button>
+    </div>
+    <button class="api-go" onclick="saveKey()">Let's go! 🚀</button>
+    <button class="api-skip" onclick="skipKey()">Use Demo Mode for now</button>
+    <p class="api-note">🔒 Stored locally only. Never shared. Never logged.</p>
+  </div>
+</div>
+
+<!-- SETTINGS OVERLAY -->
+<div class="settings-overlay" id="settingsOverlay" onclick="settingsBgClick(event)">
+  <div class="settings-box" id="settingsBox">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <h3 style="font-family:'Orbitron',sans-serif;color:var(--a1);font-size:1rem;">⚙️ Settings</h3>
+      <button onclick="closeSettings()" style="background:none;border:none;color:var(--soft);font-size:1.2rem;cursor:pointer;">✕</button>
+    </div>
+    <div class="s-sec">
+      <div class="s-lbl">🔑 OpenAI API Key</div>
+      <div class="key-wrap">
+        <input type="password" class="key-in" id="settingsKeyIn" placeholder="sk- ..."/>
+        <button class="key-vis" id="settingsVisBtn" onclick="toggleVis('settingsKeyIn','settingsVisBtn')">👁️</button>
+      </div>
+      <div class="s-btn-row">
+        <button class="s-btn primary" onclick="updateKey()">💾 Save Key</button>
+        <button class="s-btn" onclick="copyKey()">📋 Copy Key</button>
+        <button class="s-btn danger" onclick="clearKey()">🗑️ Remove</button>
+      </div>
+      <div class="copy-msg" id="copyMsg">✅ Copied to clipboard!</div>
+    </div>
+    <div class="s-sec">
+      <div class="s-lbl">🔊 Auto-Speak Responses</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:7px;">
+        <div class="toggle-wrap" id="speakToggle" onclick="toggleAutoSpeak()"><div class="toggle-knob"></div></div>
+        <span id="speakToggleLabel" style="font-size:0.79rem;color:var(--soft);">On</span>
+      </div>
+    </div>
+    <div class="s-sec">
+      <div class="s-lbl">👤 Switch Profile</div>
+      <div class="s-btn-row">
+        <button class="s-btn" onclick="closeSettings();showProfileScreen()">🔄 Switch Girl</button>
+      </div>
+    </div>
+    <div class="s-sec">
+      <div class="s-lbl">🎙️ NOVA's Voice</div>
+      <div class="voice-loading" id="voiceLoading">Loading available voices...</div>
+      <div class="voice-grid" id="voiceGrid" style="display:none;"></div>
+      <div style="margin-top:8px;display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
+        <button class="s-btn" onclick="previewVoice()">🔊 Preview Voice</button>
+        <button class="s-btn" onclick="stopSpeak()">🔇 Stop</button>
+      </div>
+      <div style="font-size:0.68rem;color:var(--soft);margin-top:6px;">Each girl can have her own voice — saved per profile.</div>
+    </div>
+    <div class="s-sec">
+      <div class="s-lbl">🗄️ Data</div>
+      <div class="s-btn-row">
+        <button class="s-btn" onclick="clearChat();closeSettings()">🗑️ Clear Chat</button>
+        <button class="s-btn danger" onclick="resetAll()">⚠️ Reset All</button>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:0.64rem;color:var(--soft);margin-top:14px;letter-spacing:1px;">NOVA v3.0 — Built with 💜 by Phoenix for the girls</div>
+  </div>
+</div>
+
+<!-- ACHIEVEMENT TOAST -->
+<div class="achieve" id="achieve"><h4>🏆 ACHIEVEMENT UNLOCKED</h4><p id="achieveTxt">Amazing!</p></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-wrap">
+    <div class="nova-orb" id="headerOrb">✨</div>
+    <div>
+      <div class="logo">NOVA</div>
+      <div class="tagline">Your Personal Study Companion</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="badge live" id="statusBadge" onclick="toggleIdle()" title="Toggle Ready/Idle">🟢 <span id="statusTxt">Ready</span></div>
+    <div class="badge gold">⭐ <span id="starCount">0</span></div>
+    <div class="badge fire">🔥 <span id="streakCount">0</span></div>
+    <button class="profile-btn" onclick="showProfileScreen()" title="Switch Profile">👤</button>
+    <button class="gear-btn" onclick="openSettings()" title="Settings">⚙️</button>
+  </div>
+</header>
+
+<!-- APP -->
+<div class="app" id="appContainer" style="display:none;">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="s-label">📚 Subjects</div>
+    <button class="s-btn active" onclick="setSub(this,'Math','🧮')"><span class="ico">🧮</span><span>Math</span></button>
+    <button class="s-btn" onclick="setSub(this,'English','📖')"><span class="ico">📖</span><span>English</span></button>
+    <button class="s-btn" onclick="setSub(this,'Science','🔬')"><span class="ico">🔬</span><span>Science</span></button>
+    <button class="s-btn" onclick="setSub(this,'Biology','🧬')"><span class="ico">🧬</span><span>Biology</span></button>
+    <button class="s-btn" onclick="setSub(this,'Chemistry','⚗️')"><span class="ico">⚗️</span><span>Chemistry</span></button>
+    <button class="s-btn" onclick="setSub(this,'Physics','⚡')"><span class="ico">⚡</span><span>Physics</span></button>
+    <button class="s-btn" onclick="setSub(this,'History','🏛️')"><span class="ico">🏛️</span><span>History</span></button>
+    <button class="s-btn" onclick="setSub(this,'Geography','🌍')"><span class="ico">🌍</span><span>Geography</span></button>
+    <button class="s-btn" onclick="setSub(this,'Algebra','📐')"><span class="ico">📐</span><span>Algebra</span></button>
+    <button class="s-btn" onclick="setSub(this,'Geometry','📏')"><span class="ico">📏</span><span>Geometry</span></button>
+    <button class="s-btn" onclick="setSub(this,'Literature','📝')"><span class="ico">📝</span><span>Literature</span></button>
+    <button class="s-btn" onclick="setSub(this,'Government','⚖️')"><span class="ico">⚖️</span><span>Government</span></button>
+    <div class="s-div"></div>
+    <div class="s-label">🎯 Tools</div>
+    <button class="s-btn" onclick="setSub(this,'Essay Helper','✍️')"><span class="ico">✍️</span><span>Essay Help</span></button>
+    <button class="s-btn" onclick="setSub(this,'Study Plan','📅')"><span class="ico">📅</span><span>Study Plan</span></button>
+    <button class="s-btn" onclick="setSub(this,'Career Path','🎯')"><span class="ico">🎯</span><span>Career</span></button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="nova-status">
+      <div class="nova-state">
+        <div class="sdot ready" id="stateDot"></div>
+        <span id="stateLabel">NOVA is ready</span>
+      </div>
+      <div class="mode-pills">
+        <button class="m-pill active" onclick="setMode(this,'tutor')">🎓 Tutor</button>
+        <button class="m-pill" onclick="setMode(this,'homework')">📋 Homework</button>
+        <button class="m-pill" onclick="setMode(this,'quiz')">🧠 Quiz</button>
+      </div>
+    </div>
+    <div class="chat" id="chat"></div>
+    <div class="typing-wrap" id="typingWrap">
+      <div class="av nova-av">✨</div>
+      <div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+    <div class="voice-center">
+      <div class="orb-wrap">
+        <div class="orb-ring" id="orbRing"></div>
+        <div class="orb" id="mainOrb" onclick="toggleListen()">🎙️</div>
+      </div>
+      <div class="waveform" id="waveform">
+        <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
+        <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
+      </div>
+      <div class="orb-hint" id="orbHint">Tap the orb to talk to NOVA 💜</div>
+    </div>
+    <div class="input-area">
+      <div class="tool-row">
+        <button class="t-btn" id="listenBtn" onclick="toggleListen()">🎤 Talk</button>
+        <button class="t-btn" onclick="triggerImg()">📷 Photo</button>
+        <button class="t-btn" onclick="triggerFile()">📎 File</button>
+        <button class="t-btn" onclick="kpopBoost()">💜 K-Pop</button>
+        <button class="t-btn" onclick="stopSpeak()">🔇 Hush</button>
+        <button class="t-btn" onclick="clearChat()">🗑️ Clear</button>
+      </div>
+      <div class="img-prev" id="imgPrev">
+        <img id="prevImg" src="" alt=""/>
+        <span id="prevName" style="font-size:0.75rem;color:var(--soft);flex:1;"></span>
+        <button class="img-rm" onclick="clearImg()">✕</button>
+      </div>
+      <div class="input-row">
+        <textarea class="chat-in" id="chatIn" placeholder="Type here or tap the orb to talk 💜" rows="1" onkeydown="onKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMsg()">➤</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right">
+    <div class="kpop-panel" onclick="refreshKpop()">
+      <div class="kp-title">💜 K-Pop Vibe</div>
+      <div class="kp-fact" id="kpFact">Loading...</div>
+      <div class="kp-refresh">Tap to refresh ↻</div>
+    </div>
+    <div class="p-card">
+      <div class="p-title">📈 Today's Progress</div>
+      <div id="progBars"></div>
+    </div>
+    <div class="p-card">
+      <div class="p-title">⚡ Quick Start</div>
+      <div id="quickStart"></div>
+    </div>
+    <div class="p-card" id="careerCard">
+      <div class="p-title">🎯 Career Corner</div>
+      <div id="careerItems"></div>
+    </div>
+  </aside>
+</div>
+
+<!-- MOBILE BOTTOM BAR -->
+<nav class="mob-bar" id="mobBar">
+  <div class="mob-tabs" id="mobTabs">
+    <button class="mob-tab active" onclick="mobSub(this,'Math','🧮')"><span class="m-ico">🧮</span>Math</button>
+    <button class="mob-tab" onclick="mobSub(this,'English','📖')"><span class="m-ico">📖</span>English</button>
+    <button class="mob-tab" onclick="mobSub(this,'Science','🔬')"><span class="m-ico">🔬</span>Science</button>
+    <button class="mob-tab" onclick="mobSub(this,'History','🏛️')"><span class="m-ico">🏛️</span>History</button>
+    <button class="mob-tab" onclick="mobSub(this,'Essay Helper','✍️')"><span class="m-ico">✍️</span>Essay</button>
+    <button class="mob-tab" onclick="mobSub(this,'Career Path','🎯')"><span class="m-ico">🎯</span>Career</button>
+  </div>
+</nav>
+<button class="mob-fab" id="mobFab" onclick="openDrawer()">📚</button>
+
+<!-- MOBILE DRAWER -->
+<div class="mob-drawer" id="mobDrawer" onclick="drawerBg(event)">
+  <div class="drawer-sheet">
+    <div class="drawer-handle"></div>
+    <div class="drawer-grid">
+      <div class="d-sec">📚 Subjects</div>
+      <div class="d-item active" onclick="drawerSub(this,'Math','🧮')"><span class="d-ico">🧮</span>Math</div>
+      <div class="d-item" onclick="drawerSub(this,'English','📖')"><span class="d-ico">📖</span>English</div>
+      <div class="d-item" onclick="drawerSub(this,'Science','🔬')"><span class="d-ico">🔬</span>Science</div>
+      <div class="d-item" onclick="drawerSub(this,'Biology','🧬')"><span class="d-ico">🧬</span>Biology</div>
+      <div class="d-item" onclick="drawerSub(this,'Chemistry','⚗️')"><span class="d-ico">⚗️</span>Chemistry</div>
+      <div class="d-item" onclick="drawerSub(this,'Physics','⚡')"><span class="d-ico">⚡</span>Physics</div>
+      <div class="d-item" onclick="drawerSub(this,'History','🏛️')"><span class="d-ico">🏛️</span>History</div>
+      <div class="d-item" onclick="drawerSub(this,'Geography','🌍')"><span class="d-ico">🌍</span>Geography</div>
+      <div class="d-item" onclick="drawerSub(this,'Algebra','📐')"><span class="d-ico">📐</span>Algebra</div>
+      <div class="d-item" onclick="drawerSub(this,'Geometry','📏')"><span class="d-ico">📏</span>Geometry</div>
+      <div class="d-item" onclick="drawerSub(this,'Literature','📝')"><span class="d-ico">📝</span>Literature</div>
+      <div class="d-item" onclick="drawerSub(this,'Government','⚖️')"><span class="d-ico">⚖️</span>Government</div>
+      <div class="d-sec">🎯 Tools</div>
+      <div class="d-item" onclick="drawerSub(this,'Essay Helper','✍️')"><span class="d-ico">✍️</span>Essay</div>
+      <div class="d-item" onclick="drawerSub(this,'Study Plan','📅')"><span class="d-ico">📅</span>Study Plan</div>
+      <div class="d-item" onclick="drawerSub(this,'Career Path','🎯')"><span class="d-ico">🎯</span>Career</div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="imgInput" accept="image/*" style="display:none" onchange="onImg(event)"/>
+<input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx" style="display:none" onchange="onFile(event)"/>
+<script>
+// ═══════════════════════════════════════
+// PROFILES
+// ═══════════════════════════════════════
+const PROFILES = {
+  liya: {
+    name:'Liya', fullName:'Aaliyah', nickname:'Liya', seriousName:'Aaliyah',
+    age:16, grade:'11th grade', gpa:'working to improve',
+    career:'Police Officer then Detective',
+    careerItems:[
+      {c:'var(--success)',t:'Math → Crime scene calculations'},
+      {c:'var(--a1)',t:'English → Writing case reports'},
+      {c:'var(--a3)',t:'Science → Forensic evidence'},
+      {c:'var(--a2)',t:'History → Understanding motive'},
+      {c:'var(--a4)',t:'Logic → Cracking every case'},
+    ],
+    condition:'ADHD — needs short steps, encouragement, no walls of text',
+    theme:'liya',
+    birthday:{month:6,day:20},
+    kpopFacts:[
+      `<strong>Bang Chan</strong> runs "Chan's Room" streams talking about mental health and hard days. Even the most talented people struggle — the key is they don't stop. Neither do you! 💜`,
+      `<strong>Felix from Stray Kids</strong> moved from Australia to Korea knowing almost no Korean. He worked so hard he now raps AND speaks fluently. Hard things become possible! 🌟`,
+      `<strong>Han (Jisung)</strong> writes deeply personal lyrics about anxiety and self-doubt. Feeling overwhelmed is normal — even the most gifted people feel it. Keep going! ✍️`,
+      `<strong>ATEEZ</strong> performed at KCON before they even debuted! They prepared so hard that when the moment came, they were READY. That's what studying does for you! 🔥`,
+      `<strong>Mingi from ATEEZ</strong> almost didn't make it as a trainee but never gave up. Persistence beats talent every single time! 💪`,
+      `<strong>3RACHA</strong> posted music online for years with almost no audience. They kept going anyway. Consistency beats instant results! 🎵`,
+      `<strong>Yeosang from ATEEZ</strong> was a trainee for 6 years before debut. Patience and dedication. Your diploma is closer than you think! 📜`,
+    ],
+    starters:{
+      Math:['Walk me through this step by step','Help me with fractions','What is order of operations?'],
+      English:['Help me fix my paragraph','What is a thesis statement?','How do I write a strong intro?'],
+      Science:['Explain the scientific method','What is photosynthesis?','Help me understand this topic'],
+      History:['Why did World War I start?','What caused the Civil War?','Explain this event simply'],
+      'Essay Helper':['Help me write an intro','What is a 5-paragraph essay?','Review my writing'],
+      'Career Path':['What does a detective need?','How do I become a police officer?','What skills matter most?'],
+    },
+    personality:`Warm, encouraging, big-sister energy. Short steps always. Connect everything to detective/police work. ADHD-friendly: no walls of text. Voice-first responses.`,
+    voiceStyle:`Casual, warm, like a caring older sister. Short punchy sentences. Natural pauses.`,
+  },
+  amirah: {
+    name:'Bullfrog', fullName:'Amirah', nickname:'Bullfrog', seriousName:'Amirah',
+    age:15, grade:'10th grade', gpa:'average, capable of more',
+    career:'Lawyer',
+    careerItems:[
+      {c:'var(--a1)',t:'English → Legal writing & arguments'},
+      {c:'var(--a4)',t:'History → Understanding laws & precedent'},
+      {c:'var(--a2)',t:'Government → How courts work'},
+      {c:'var(--a3)',t:'Math → Logic & case analysis'},
+      {c:'var(--success)',t:'Science → Evidence-based reasoning'},
+    ],
+    condition:'No learning condition. Reads a lot. Can handle depth. Curious and competitive.',
+    theme:'amirah',
+    birthday:{month:7,day:20},
+    kpopFacts:[
+      `<strong>Onlyoneoff's BYC</strong> writes lyrics that are genuinely poetic and layered — the kind of depth that takes real intelligence to appreciate. Sound like anyone you know? 😏`,
+      `<strong>Onlyoneoff</strong> is criminally underrated — which is honestly perfect for someone with taste this specific. Being ahead of the curve is a flex. ⚖️`,
+      `<strong>Bang Chan from Stray Kids</strong> produces, writes, AND manages his team. A real multi-threat. Lawyers do the same — research, argue, strategize, all at once. 💼`,
+      `<strong>ATEEZ</strong> built their empire through sheer relentless work and strategy — very lawyer-coded if you think about it. Plan. Execute. Win. 🏆`,
+      `<strong>Felix's</strong> confidence on stage is studied and deliberate — just like how great lawyers own the courtroom. Presence is everything. 💫`,
+      `<strong>Onlyoneoff</strong> blends genres nobody else would dare mix. The best lawyers do the same with arguments — unexpected angles that actually work. 🎯`,
+    ],
+    starters:{
+      Math:['Explain this concept clearly','Challenge me with a hard problem','Show me the logic behind this'],
+      English:['Help me argue this point better','What makes a persuasive essay?','Debate this topic with me'],
+      History:['What were the real causes?','Connect this to modern times','Give me the full context'],
+      Government:['How does the court system work?','Explain constitutional law basics','What makes a strong legal argument?'],
+      'Essay Helper':['Make my argument stronger','Help me write a persuasive essay','Pick apart my thesis'],
+      'Career Path':['What does a lawyer actually do?','How do I prep for pre-law?','What skills make a great attorney?'],
+    },
+    personality:`Match her energy — sarcastic, witty, competitive. She can handle depth and big vocabulary. Challenge her thinking, ask her debate questions back. Connect everything to law, debate, argumentation. Athletic analogies work well. Don't baby her — she'll clock it immediately and lose interest. Be her intellectual sparring partner.`,
+    voiceStyle:`Sharp, quick, slightly witty. Can use bigger vocabulary. Push back sometimes — she loves it.`,
+  },
+  riri: {
+    name:'Riri', fullName:'Ariah', nickname:'Riri', seriousName:'Ariah', spokenNickname:'Rye Rye', spokenFullName:'Aria',
+    age:9, grade:'4th grade', gpa:'top student, struggles with math',
+    career:'Scientist and Educator',
+    careerItems:[
+      {c:'var(--a1)',t:'Math → Scientists use it every day!'},
+      {c:'var(--a4)',t:'Science → Your future career! 🦕'},
+      {c:'var(--a3)',t:'Reading → Understanding research'},
+      {c:'var(--a2)',t:'Writing → Sharing discoveries'},
+      {c:'var(--success)',t:'Curiosity → The best scientist tool!'},
+    ],
+    condition:'Energetic, talkative, bossy, very intelligent. Needs to be kept engaged and challenged.',
+    theme:'riri',
+    birthday:{month:5,day:17},
+    kpopFacts:[
+      `Did you know K-Pop choreography uses SCIENCE? Dancers calculate angles, timing, and physics with every move! Real scientists in disguise! 🦕💃`,
+      `K-Pop studios use MATH to mix music — beats per minute, sound frequencies, timing. You're literally studying what music producers use! 🎵`,
+      `K-Pop groups have TEACHERS who travel with them on tour! Being an educator is one of the coolest jobs in the world — just like you want to be! 📚`,
+      `Scientists discovered a dinosaur species and named it after a K-Pop fan club! Dino fans and K-Pop fans unite! 🦕✨`,
+      `K-Pop idols study languages, music theory, AND science of sound. Learning everything = being the best. Sound familiar, Riri? 😄`,
+    ],
+    starters:{
+      Math:['Help me with this math problem!','What is multiplication?','I need help with fractions'],
+      Science:['Tell me about dinosaurs!','What is the water cycle?','How do volcanoes work?'],
+      English:['Help me write a story','What is a noun?','Help me spell this word'],
+      'Study Plan':['Make studying fun for me!','How do I remember things better?','Give me a fun challenge!'],
+      'Career Path':['What do scientists do?','How do I become a teacher?','Tell me about dinosaur scientists!'],
+    },
+    personality:`Super warm, playful, energetic. Simple words — she is 9. Use LOTS of emojis. Make everything feel like a fun game or adventure. Connect everything to dinosaurs AND K-Pop when possible. Challenge her — she is smart and gets bored easily. Celebrate every correct answer LOUDLY. Use analogies she would understand: dinosaurs, school, games, cartoons. Never talk down to her — she is sharp and will notice. Keep her on her toes with fun follow-up questions.`,
+    voiceStyle:`Bright, bouncy, enthusiastic. Short sentences. Lots of energy. Make it fun!`,
+  }
+};
+
+// ═══════════════════════════════════════
+// BIRTHDAYS
+// ═══════════════════════════════════════
+const FAMILY_BDAYS = [
+  {month:6,  day:20, who:'liya',   label:"Liya's Birthday"},
+  {month:7,  day:20, who:'amirah', label:"Amirah's Birthday"},
+  {month:5,  day:17, who:'riri',   label:"Riri's Birthday"},
+];
+
+function getBdayContext(profileKey){
+  const now = new Date(); const m = now.getMonth()+1; const d = now.getDate();
+  const mine = FAMILY_BDAYS.find(b=>b.who===profileKey && b.month===m && b.day===d);
+  if(mine) return {type:'mine', label:mine.label};
+  const sibling = FAMILY_BDAYS.find(b=>b.who!==profileKey && b.month===m && b.day===d);
+  if(sibling) return {type:'sibling', label:sibling.label};
+  const upcoming = FAMILY_BDAYS.filter(b=>{
+    const bd = new Date(now.getFullYear(),b.month-1,b.day);
+    const diff = Math.ceil((bd-now)/(1000*60*60*24));
+    return diff>0 && diff<=7;
+  }).map(b=>{
+    const bd = new Date(now.getFullYear(),b.month-1,b.day);
+    const diff = Math.ceil((bd-now)/(1000*60*60*24));
+    return {...b,diff};
+  });
+  if(upcoming.length) return {type:'upcoming', list:upcoming};
+  return null;
+}
+
+function bdayNote(profileKey){
+  const ctx = getBdayContext(profileKey);
+  if(!ctx) return '';
+  if(ctx.type==='mine') return `\n\nSPECIAL: TODAY IS HER BIRTHDAY! Make it magical. Open with a warm personal birthday message and weave celebration throughout the session.`;
+  if(ctx.type==='sibling') return `\n\nSPECIAL: Today is ${ctx.label}! Mention it warmly and encourage her to celebrate her sister.`;
+  if(ctx.type==='upcoming'){
+    const notes = ctx.list.map(b=>`${b.label} is in ${b.diff} day${b.diff>1?'s':''}!`).join(' ');
+    return `\n\nNOTE: Upcoming birthdays — ${notes} Mention warmly if it fits.`;
+  }
+  return '';
+}
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let apiKey = localStorage.getItem('nova_key') || '';
+let currentProfile = null;
+let subject = 'Math';
+let mode = 'tutor';
+let stars = +localStorage.getItem('nova_stars') || 0;
+let streak = +localStorage.getItem('nova_streak') || 0;
+let msgCount = 0;
+let chatHistory = [];
+let autoSpeak = true;
+let isIdle = false;
+let isListening = false;
+let isSpeaking = false;
+let pendingImgB64 = null;
+let pendingImgFile = null;
+let synth = window.speechSynthesis;
+let prefVoice = null;
+let recogObj = null;
+let micGranted = false;
+let progress = {};
+let kpopIdx = 0;
+let profileListenActive = false;
+let profileRecog = null;
+
+// ═══════════════════════════════════════
+// STARFIELD
+// ═══════════════════════════════════════
+function buildStars(){
+  const c = document.getElementById('stars');
+  if(!c) return;
+  c.innerHTML = '';
+  for(let i=0;i<100;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const sz = Math.random()*2+1;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:${(Math.random()*5).toFixed(1)}s;--op:${(Math.random()*0.5+0.3).toFixed(2)}`;
+    c.appendChild(s);
+  }
+}
+
+// ═══════════════════════════════════════
+// VOICE SETUP
+// ═══════════════════════════════════════
+function loadVoices(){
+  if(!synth) return;
+  const voices = synth.getVoices();
+  if(!voices.length){ setTimeout(loadVoices,300); return; }
+  const priority=['Samantha','Google US English','Microsoft Zira','Microsoft Jenny','Karen','Moira'];
+  for(const name of priority){
+    const v = voices.find(v=>v.name.includes(name));
+    if(v){ prefVoice=v; break; }
+  }
+  if(!prefVoice) prefVoice = voices.find(v=>v.lang==='en-US') || voices[0];
+}
+
+function cleanForSpeech(text){
+  // Replace display names with phonetic versions for TTS
+  let t = text;
+  if(currentProfile){
+    const p = currentProfile;
+    if(p.spokenNickname)  t = t.replace(new RegExp(p.nickname,  'g'), p.spokenNickname);
+    if(p.spokenFullName)  t = t.replace(new RegExp(p.fullName,   'g'), p.spokenFullName);
+    if(p.seriousName && p.spokenFullName) t = t.replace(new RegExp(p.seriousName,'g'), p.spokenFullName);
+  }
+  return t;
+}
+
+function speak(text, onDone){
+  if(!synth||!text||!autoSpeak) return;
+  stopSpeak();
+  const tmp=document.createElement('div'); tmp.innerHTML=text;
+  let clean=(tmp.innerText||tmp.textContent||'').replace(/\s+/g,' ').trim();
+  clean = cleanForSpeech(clean);
+  if(!clean) return;
+  const u = new SpeechSynthesisUtterance(clean);
+  u.rate=0.93; u.pitch=1.06; u.volume=1;
+  if(prefVoice) u.voice=prefVoice;
+  u.onstart=()=>{ isSpeaking=true; setState('speaking'); document.getElementById('mainOrb').classList.add('speaking-orb'); };
+  u.onend=()=>{ isSpeaking=false; setState('ready'); document.getElementById('mainOrb').classList.remove('speaking-orb'); if(onDone)onDone(); };
+  u.onerror=()=>{ isSpeaking=false; setState('ready'); document.getElementById('mainOrb').classList.remove('speaking-orb'); };
+  synth.speak(u);
+}
+
+function stopSpeak(){
+  if(synth) synth.cancel();
+  isSpeaking=false;
+  const orb=document.getElementById('mainOrb');
+  if(orb) orb.classList.remove('speaking-orb');
+  setState('ready');
+}
+
+// ═══════════════════════════════════════
+// MICROPHONE PERMISSION
+// ═══════════════════════════════════════
+function reqMic(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) return;
+  navigator.mediaDevices.getUserMedia({audio:true})
+    .then(()=>{ micGranted=true; })
+    .catch(()=>{ micGranted=false; });
+}
+
+// ═══════════════════════════════════════
+// VOICE INPUT - MAIN CHAT
+// ═══════════════════════════════════════
+function buildRecog(){
+  const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR) return null;
+  const r = new SR();
+  r.continuous=false; r.interimResults=false; r.lang='en-US';
+  r.onstart=()=>{
+    isListening=true; setState('listening');
+    document.getElementById('mainOrb').classList.add('listening');
+    document.getElementById('orbRing').classList.add('active');
+    document.getElementById('waveform').classList.add('show');
+    document.getElementById('orbHint').textContent="I'm listening... go ahead! 🎤";
+    document.getElementById('listenBtn').classList.add('rec');
+    document.getElementById('listenBtn').textContent='⏹ Stop';
+  };
+  r.onresult=e=>{
+    const t=e.results[0][0].transcript;
+    document.getElementById('chatIn').value=t;
+    autoResize(document.getElementById('chatIn'));
+  };
+  r.onend=()=>{
+    stopListen();
+    const v=document.getElementById('chatIn').value.trim();
+    if(v) sendMsg();
+  };
+  r.onerror=e=>{
+    stopListen();
+    if(e.error==='not-allowed') addMsg('nova',"Microphone blocked! Tap the lock icon in your browser bar and allow microphone access, then try again! 🎤");
+    else if(e.error!=='aborted') addMsg('nova',"Didn't catch that — try again! 🎤");
+  };
+  return r;
+}
+
+function toggleListen(){
+  if(isIdle){ toggleIdle(); return; }
+  if(isSpeaking) stopSpeak();
+  if(isListening){ stopListen(); return; }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ addMsg('nova','Voice input needs Chrome or Edge browser! 🎤'); return; }
+  if(!recogObj) recogObj=buildRecog();
+  if(!recogObj) return;
+  try{ recogObj.start(); }
+  catch(e){ recogObj=buildRecog(); try{ recogObj.start(); }catch(e2){} }
+}
+
+function stopListen(){
+  if(recogObj){ try{ recogObj.stop(); }catch(e){} }
+  recogObj=null; isListening=false;
+  setState('ready');
+  const orb=document.getElementById('mainOrb');
+  const ring=document.getElementById('orbRing');
+  const wf=document.getElementById('waveform');
+  const btn=document.getElementById('listenBtn');
+  const hint=document.getElementById('orbHint');
+  if(orb) orb.classList.remove('listening');
+  if(ring) ring.classList.remove('active');
+  if(wf) wf.classList.remove('show');
+  if(btn){ btn.classList.remove('rec'); btn.textContent='🎤 Talk'; }
+  if(hint) hint.textContent='Tap the orb to talk to NOVA 💜';
+}
+
+// ═══════════════════════════════════════
+// PROFILE VOICE LISTENER
+// ═══════════════════════════════════════
+function startProfileListen(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    document.getElementById('profileVlText').textContent='Voice not supported — tap a card instead';
+    return;
+  }
+  if(profileListenActive){ stopProfileListen(); return; }
+  profileRecog = new SR();
+  profileRecog.continuous=false; profileRecog.interimResults=false; profileRecog.lang='en-US';
+  profileRecog.onstart=()=>{
+    profileListenActive=true;
+    document.getElementById('profileVlDot').classList.add('active');
+    document.getElementById('profileVlText').textContent='Listening... say Liya, Bullfrog, or Riri!';
+  };
+  profileRecog.onresult=e=>{
+    const t=e.results[0][0].transcript.toLowerCase().trim();
+    stopProfileListen();
+    if(t.includes('liya')||t.includes('aaliyah')) selectProfile('liya');
+    else if(t.includes('bullfrog')||t.includes('amirah')||t.includes('frog')) selectProfile('amirah');
+    else if(t.includes('riri')||t.includes('ariah')||t.includes('ria')) selectProfile('riri');
+    else document.getElementById('profileVlText').textContent='Hmm, try again — say Liya, Bullfrog, or Riri!';
+  };
+  profileRecog.onend=()=>{ stopProfileListen(); };
+  profileRecog.onerror=()=>{
+    stopProfileListen();
+    document.getElementById('profileVlText').textContent='Tap to say your name instead';
+  };
+  profileRecog.start();
+}
+
+function stopProfileListen(){
+  if(profileRecog){ try{ profileRecog.stop(); }catch(e){} profileRecog=null; }
+  profileListenActive=false;
+  const dot=document.getElementById('profileVlDot');
+  const txt=document.getElementById('profileVlText');
+  if(dot) dot.classList.remove('active');
+  if(txt) txt.textContent='Tap to say your name instead';
+}
+
+// ═══════════════════════════════════════
+// PROFILE SELECTION & THEME
+// ═══════════════════════════════════════
+function selectProfile(key){
+  stopProfileListen();
+  currentProfile = PROFILES[key];
+  localStorage.setItem('nova_profile', key);
+
+  // Apply theme
+  document.body.className = key==='liya'?'':'theme-'+key;
+
+  // Restore this profile's saved voice preference
+  setTimeout(applyProfileVoice, 300);
+
+  // Show app
+  document.getElementById('profileScreen').style.display='none';
+  document.getElementById('appContainer').style.display='flex';
+
+  // Check API key
+  if(!apiKey){
+    document.getElementById('apiOverlay').classList.add('open');
+  } else {
+    initApp();
+  }
+}
+
+function showProfileScreen(){
+  stopSpeak(); stopListen();
+  chatHistory=[];
+  document.getElementById('appContainer').style.display='none';
+  document.getElementById('profileScreen').style.display='flex';
+  document.getElementById('chat').innerHTML='';
+}
+
+function applyTheme(key){
+  document.body.className = key==='liya'?'':'theme-'+key;
+}
+
+// ═══════════════════════════════════════
+// STATE UI
+// ═══════════════════════════════════════
+function setState(s){
+  if(isIdle && s==='ready') return;
+  const dot=document.getElementById('stateDot');
+  const lbl=document.getElementById('stateLabel');
+  const st=document.getElementById('statusTxt');
+  if(!dot) return;
+  dot.className='sdot';
+  const map={
+    ready:   ['ready',   'NOVA is ready',        'Ready'],
+    thinking:['thinking','NOVA is thinking...', 'Thinking'],
+    speaking:['speaking','NOVA is speaking',    'Speaking'],
+    listening:['listening','Listening...',      'Listening'],
+  };
+  const [cls,label,badge]=map[s]||map.ready;
+  dot.classList.add(cls);
+  if(lbl) lbl.textContent=label;
+  if(st)  st.textContent=badge;
+}
+
+// ═══════════════════════════════════════
+// IDLE TOGGLE
+// ═══════════════════════════════════════
+function toggleIdle(){
+  if(isListening||isSpeaking) return;
+  isIdle=!isIdle;
+  const badge=document.getElementById('statusBadge');
+  const orb=document.getElementById('headerOrb');
+  const hint=document.getElementById('orbHint');
+  if(isIdle){
+    badge.className='badge live idle-mode';
+    badge.innerHTML='⚪ <span id="statusTxt">Idle</span>';
+    document.getElementById('stateDot').className='sdot';
+    document.getElementById('stateLabel').textContent='NOVA is resting — tap badge to wake';
+    if(orb){orb.style.animation='none';orb.style.opacity='0.3';orb.textContent='💤';}
+    if(hint) hint.textContent='NOVA is resting — tap the status badge to wake her up';
+  } else {
+    badge.className='badge live';
+    badge.innerHTML='🟢 <span id="statusTxt">Ready</span>';
+    setState('ready');
+    if(orb){orb.style.animation='';orb.style.opacity='1';orb.textContent='✨';}
+    if(hint) hint.textContent='Tap the orb to talk to NOVA 💜';
+    addMsg('nova',"I'm back! 😊 What are we working on? 💜",true);
+  }
+}
+
+// ═══════════════════════════════════════
+// ADD MESSAGE
+// ═══════════════════════════════════════
+function addMsg(role, html, speakIt=false){
+  const c=document.getElementById('chat');
+  if(!c) return;
+  const wrap=document.createElement('div');
+  wrap.className=`msg ${role==='user'?'user':''}`;
+  const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const isNova=role==='nova';
+  const av=`<div class="av ${isNova?'nova-av':'user-av'}">${isNova?'✨':'👤'}</div>`;
+  const speakRow=isNova
+    ?`<div class="speak-row"><button class="speak-btn" onclick="speakBubble(this)">🔊 Read aloud</button><span class="msg-time">${time}</span></div>`
+    :`<div style="text-align:right;margin-top:4px;"><span class="msg-time">${time}</span></div>`;
+  wrap.innerHTML=`${isNova?av:''}<div class="bubble ${isNova?'nova-b':'user-b'}"><div class="bdy">${html}</div>${speakRow}</div>${!isNova?av:''}`;
+  c.appendChild(wrap);
+  c.scrollTop=c.scrollHeight;
+  if(speakIt&&isNova){
+    const tmp=document.createElement('div'); tmp.innerHTML=html;
+    speak(tmp.innerText||tmp.textContent||'');
+  }
+}
+
+function speakBubble(btn){
+  const bdy=btn.closest('.bubble').querySelector('.bdy');
+  if(bdy) speak(bdy.innerText||bdy.textContent||'');
+}
+
+function showTyping(){
+  const t=document.getElementById('typingWrap');
+  if(t) t.classList.add('show');
+  const c=document.getElementById('chat');
+  if(c) c.scrollTop=c.scrollHeight;
+  setState('thinking');
+}
+function hideTyping(){
+  const t=document.getElementById('typingWrap');
+  if(t) t.classList.remove('show');
+}
+
+// ═══════════════════════════════════════
+// STARS & ACHIEVEMENTS
+// ═══════════════════════════════════════
+function addStars(n){
+  stars+=n;
+  localStorage.setItem('nova_stars',stars);
+  const el=document.getElementById('starCount');
+  if(el) el.textContent=stars;
+  if(stars>0&&stars%15===0) showAchieve(`${stars} stars! You're on fire! ⭐`);
+}
+
+function showAchieve(txt){
+  const el=document.getElementById('achieve');
+  const te=document.getElementById('achieveTxt');
+  if(!el||!te) return;
+  te.textContent=txt;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),4000);
+}
+
+// ═══════════════════════════════════════
+// SUBJECT & MODE
+// ═══════════════════════════════════════
+function setSub(btn, name, icon){
+  document.querySelectorAll('.s-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  subject=name; chatHistory=[];
+  updateQuickStart(); updateProgress();
+  addMsg('nova',`Switched to <strong>${icon} ${name}</strong>! What do you need help with? 💜`,false);
+}
+
+function setMode(btn, m){
+  document.querySelectorAll('.m-pill').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  mode=m;
+  const msgs={
+    tutor:"Tutor mode! Ask me anything — I'll explain step by step. 🎓",
+    homework:"Homework mode! Share your assignment and we'll work through it together. 📋",
+    quiz:"Quiz mode! I'll ask you questions one at a time. Say 'ready' to start! 🧠"
+  };
+  addMsg('nova',msgs[m],true);
+}
+
+// ═══════════════════════════════════════
+// QUICK STARTERS
+// ═══════════════════════════════════════
+const defaultStarters={
+  Math:['Walk me through this','Help me understand fractions','What is order of operations?'],
+  English:['Help me fix my paragraph','What is a thesis?','How do I write a strong intro?'],
+  Science:['Explain this concept simply','What is photosynthesis?','Help me understand this topic'],
+  Biology:['Explain cell division','What is DNA?','Help with biology terms'],
+  Chemistry:['Balance this equation','Explain periodic table','What are acids and bases?'],
+  Physics:["Explain Newton's laws",'Speed vs velocity?','Help with this problem'],
+  History:['Why did this happen?','Explain the causes','Connect this to today'],
+  Geography:['Explain climate zones','What causes earthquakes?','Help with this topic'],
+  Algebra:['Solve for x','Explain linear equations','What are like terms?'],
+  Geometry:['Pythagorean theorem','Find area and perimeter','Explain angles'],
+  Literature:['Analyze this poem','What is a metaphor?','Help find the theme'],
+  Government:['3 branches of government','How are laws made?','Explain my rights'],
+  'Essay Helper':['Help me write an intro','What is a 5-paragraph essay?','Review my writing'],
+  'Study Plan':['Make me a study plan','How do I study better?','Help me organize'],
+  'Career Path':['Tell me about my career','What skills do I need?','How do I prepare?'],
+};
+
+function updateQuickStart(){
+  const c=document.getElementById('quickStart');
+  if(!c) return;
+  const profileS = currentProfile&&currentProfile.starters&&currentProfile.starters[subject];
+  const s = profileS || defaultStarters[subject] || defaultStarters.Math;
+  c.innerHTML=s.map(t=>`<div class="q-tip" onclick="quickAsk('${t.replace(/'/g,"\\'")}')">${t}</div>`).join('');
+}
+
+function quickAsk(t){
+  document.getElementById('chatIn').value=t;
+  sendMsg();
+}
+
+// ═══════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════
+const progColors={Math:'var(--a1)',English:'var(--a2)',Science:'var(--a3)',History:'var(--a4)',Biology:'var(--success)',Chemistry:'#f97316',Physics:'#e879f9'};
+
+function updateProgress(){
+  const c=document.getElementById('progBars');
+  if(!c) return;
+  const subs=['Math','English','Science','History','Biology'];
+  c.innerHTML=subs.map(s=>{
+    const pct=Math.min(progress[s]||0,100);
+    const col=progColors[s]||'var(--a1)';
+    return `<div class="prog-item"><div class="prog-label"><span>${s}</span><span style="color:${col}">${pct}%</span></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${col}"></div></div></div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// CAREER CORNER
+// ═══════════════════════════════════════
+function updateCareer(){
+  const c=document.getElementById('careerItems');
+  if(!c||!currentProfile) return;
+  c.innerHTML=currentProfile.careerItems.map(item=>
+    `<div class="career-row"><div class="cdot" style="background:${item.c}"></div><span>${item.t}</span></div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════
+// K-POP
+// ═══════════════════════════════════════
+function refreshKpop(){
+  if(!currentProfile) return;
+  kpopIdx=(kpopIdx+1)%currentProfile.kpopFacts.length;
+  const el=document.getElementById('kpFact');
+  if(el) el.innerHTML=currentProfile.kpopFacts[kpopIdx];
+}
+
+function kpopBoost(){
+  if(!currentProfile) return;
+  const fact=currentProfile.kpopFacts[Math.floor(Math.random()*currentProfile.kpopFacts.length)];
+  addMsg('nova',`<div class="kpop-card"><div class="kh">💜 K-Pop Energy Drop!</div>${fact}</div><br>Okay — that energy is yours now. Let's use it! What are we working on? 🔥`,true);
+  addStars(1); refreshKpop();
+}
+
+// ═══════════════════════════════════════
+// SYSTEM PROMPT
+// ═══════════════════════════════════════
+function buildSysPrompt(){
+  if(!currentProfile) return '';
+  const p=currentProfile;
+  const hour=new Date().getHours();
+  const tod=hour<12?'morning':hour<17?'afternoon':hour<21?'evening':'night';
+  const isEssay=['Essay Helper','English','Literature'].includes(subject);
+  const isRiri=p.name==='Riri';
+
+  return `You are NOVA — a warm, intelligent AI study companion for ${p.fullName}, who goes by "${p.nickname}".
+
+STUDENT PROFILE:
+- Name: ${p.fullName} / called "${p.nickname}" casually, "${p.seriousName}" when serious
+- Age: ${p.age} | Grade: ${p.grade}
+- Career goal: ${p.career}
+- Notes: ${p.condition}
+- Current time: ${tod}
+
+PERSONALITY INSTRUCTIONS:
+${p.personality}
+
+VOICE STYLE:
+${p.voiceStyle}
+
+CORE TEACHING RULES:
+${isRiri?`
+1. Use VERY simple words — she is 9 years old. Short sentences always.
+2. Make everything a fun game, adventure, or dinosaur connection when possible.
+3. Use lots of emojis to keep it visual and exciting.
+4. Celebrate every correct answer with big energy.
+5. Keep steps tiny — one idea at a time.
+6. Ask her fun follow-up questions to keep her engaged.
+7. Never talk down to her — she is smart. Challenge her.
+8. Connect topics to dinosaurs, science, or K-Pop whenever you can.
+`:`
+1. NEVER give a wall of text. Break everything into small numbered steps.
+2. Each step = 2-3 sentences max.
+3. NEVER just give the answer — teach the process.
+4. Use simple language. Explain any jargon immediately.
+5. Connect subjects to her career: ${p.career}.
+6. Every 3-4 responses, drop a K-Pop reference as a reward.
+7. Check in emotionally occasionally.
+8. End with an encouraging line or follow-up question.
+9. NEVER fabricate facts, dates, quotes, or statistics. If unsure, say so.
+10. If a question is unclear, ask ONE clarifying question before answering.
+`}
+
+${isEssay&&!isRiri?`
+ESSAY RULES (STRICT):
+- Write like a real ${p.grade} student — NOT an AI, not a college student.
+- Use natural vocabulary a ${p.age}-year-old actually uses.
+- BANNED words: "delve", "tapestry", "nuanced", "moreover", "furthermore", "in the realm of", "stands as a testament", "multifaceted", "in today's society", "since the dawn of time", "pivotal", "paramount", "embark", "shed light on", "it is worth noting", "underscore", "navigate the landscape".
+- Natural transitions only: "Also", "But", "So", "For example", "That is why".
+- 4-6 sentences per paragraph max.
+- BEFORE writing: ask for (1) exact prompt, (2) required length, (3) format, (4) any existing draft, (5) specific source if needed.
+- Guide her through brainstorm → outline → draft section by section.
+- NEVER invent quotes, statistics, or sources.
+`:''}
+
+HTML FORMATTING:
+- Steps: <div class="step-card"><div class="step-label">Step 1</div>content</div>
+- Tips: <div class="tip-card">💡 content</div>
+- K-Pop: <div class="kpop-card"><div class="kh">💜 K-Pop Moment</div>content</div>
+- Career: <div class="det-card"><div class="dh">🎯 ${p.career} Connection</div>content</div>
+- Use <strong> for key terms, <em> for emphasis.
+${isRiri?'- Use LOTS of emojis throughout every response.':''}
+
+CURRENT SESSION: Subject: ${subject} | Mode: ${mode==='tutor'?'TUTOR — explain clearly from scratch':mode==='homework'?'HOMEWORK — solve the specific problem while teaching':' QUIZ — one question at a time, encouraging feedback'}
+${bdayNote(localStorage.getItem('nova_profile')||'liya')}`;
+}
+
+// ═══════════════════════════════════════
+// SEND MESSAGE
+// ═══════════════════════════════════════
+async function sendMsg(){
+  const input=document.getElementById('chatIn');
+  if(!input) return;
+  const txt=input.value.trim();
+  if(!txt&&!pendingImgB64) return;
+
+  if(isIdle){ toggleIdle(); return; }
+  stopSpeak();
+
+  const display=txt||(pendingImgB64?'[Image uploaded]':'');
+  addMsg('user',display);
+  input.value='';
+  autoResize(input);
+  msgCount++;
+
+  if(progColors[subject]){
+    progress[subject]=Math.min(100,(progress[subject]||0)+5);
+    updateProgress();
+  }
+
+  const content = pendingImgB64
+    ?[{type:'text',text:txt||'Please help me with this image.'},{type:'image_url',image_url:{url:pendingImgB64}}]
+    :txt;
+
+  chatHistory.push({role:'user',content});
+  showTyping();
+
+  try{
+    const reply = apiKey ? await callAI() : demoReply(txt);
+    hideTyping();
+    chatHistory.push({role:'assistant',content:reply});
+    setState('speaking');
+    addMsg('nova',reply,true);
+    addStars(2);
+    if(pendingImgB64) clearImg();
+    if(msgCount===5) showAchieve('5 questions! You are warming up! 🔥');
+    if(msgCount===10){ showAchieve('10 questions! Keep it up! 🌟'); addStars(5); }
+    if(msgCount===20){ showAchieve('20 questions! You are on a roll! 💜'); addStars(10); }
+  } catch(err){
+    hideTyping(); setState('ready');
+    addMsg('nova',`Hmm, something went wrong: ${err.message}. Check the API key in Settings! 💜`);
+  }
+}
+
+async function callAI(){
+  const msgs=[{role:'system',content:buildSysPrompt()},...chatHistory];
+  const res=await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
+    body:JSON.stringify({
+      model:pendingImgB64?'gpt-4o':'gpt-4o-mini',
+      messages:msgs, max_tokens:900, temperature:0.8
+    })
+  });
+  if(!res.ok){ const e=await res.json(); throw new Error(e.error?.message||`API error ${res.status}`); }
+  const d=await res.json();
+  return d.choices[0].message.content;
+}
+
+// ═══════════════════════════════════════
+// DEMO REPLIES
+// ═══════════════════════════════════════
+function demoReply(txt){
+  const q=(txt||'').toLowerCase();
+  const p=currentProfile||PROFILES.liya;
+  const isRiri=p.name==='Riri';
+
+  if(q.match(/hi|hello|hey|what.s up/)){
+    if(isRiri) return `Hiiiii ${p.nickname}! 🦕✨ I'm NOVA and I'm SO excited to study with you today! What should we explore first? Math? Science? Dinosaurs? 🎉`;
+    if(p.name==='Bullfrog') return `Hey ${p.nickname} 😏 Ready to actually use that big brain of yours today? What are we getting into?`;
+    return `Hey ${p.nickname}! 💜 So glad you're here. What are we tackling today?`;
+  }
+
+  if(q.match(/math|number|equation|calculate|fraction|multiply|divide|algebra|geometry/)){
+    if(isRiri) return `Ooh math! 🦕 Let's make it fun! Did you know T-Rex scientists use MATH to figure out how fast dinosaurs ran? Let's solve this together!<div class="step-card"><div class="step-label">Step 1</div>Read the problem carefully! What number are we looking for? 🔍</div><div class="step-card"><div class="step-label">Step 2</div>Write down what we know! Like a scientist writing notes! 📝</div><div class="step-card"><div class="step-label">Step 3</div>Let's solve it one tiny piece at a time! 🎯</div>What's your math problem, Riri? Tell me! 😊`;
+    if(p.name==='Bullfrog') return `Alright ${p.nickname}, math. Let's actually understand it instead of just memorizing it — way more useful in a courtroom anyway.<div class="step-card"><div class="step-label">Step 1 — Identify What You Need</div>What is the problem actually asking? Read it twice. What's the unknown?</div><div class="step-card"><div class="step-label">Step 2 — List Your Evidence</div>What information does the problem give you? Write it down like case evidence.</div><div class="step-card"><div class="step-label">Step 3 — Choose Your Method</div>What operation or formula fits? Pick your tool and apply it cleanly.</div><div class="det-card"><div class="dh">🎯 Lawyer Connection</div>Logical reasoning in math is the SAME skill you use to build a legal argument. Evidence → method → conclusion. Same process.</div>Paste the specific problem and let's work through it. 💪`;
+    return `Let's break this down together! 🧮<div class="step-card"><div class="step-label">Step 1 — Read It Carefully</div>What is the problem asking you to FIND? Underline or circle it.</div><div class="step-card"><div class="step-label">Step 2 — List What You Know</div>Write down every number and fact given. Clues at a crime scene! 🔍</div><div class="step-card"><div class="step-label">Step 3 — Pick Your Operation</div>Adding? Subtracting? Multiplying? Dividing? Choose the right tool.</div><div class="step-card"><div class="step-label">Step 4 — Show Every Step</div>Write each step out. Detectives document everything!</div><div class="tip-card">💡 Always check your answer by plugging it back in!</div>Share your specific problem and I'll walk through it with you! 😊`;
+  }
+
+  if(q.match(/science|biology|chemistry|physics|dino|dinosaur|fossil|volcano|experiment/)){
+    if(isRiri) return `SCIENCE!!! 🦕🔬 My FAVORITE! Did you know paleontologists — that's dinosaur scientists — use chemistry, physics, AND biology ALL at once? You're going to need ALL of these someday!<div class="step-card"><div class="step-label">Let's Explore!</div>What science topic are we diving into today? Tell me everything! 🦕</div><div class="kpop-card"><div class="kh">💜 Fun Fact!</div>Scientists discovered a new dinosaur species and named it after a K-Pop fan club! Dino fans are the BEST! 🦕✨</div>What's your science question, future scientist? 🔬`;
+    return `Science time! 🔬<div class="step-card"><div class="step-label">Step 1 — The Core Idea</div>Every science concept has a simple core. Let's find the "why" before memorizing anything.</div><div class="step-card"><div class="step-label">Step 2 — Break the Vocabulary</div>Science feels hard mostly because of fancy words. We translate each term into plain English.</div><div class="det-card"><div class="dh">🎯 Career Connection</div>Forensic science uses chemistry, biology, and physics every day. You're studying your future toolkit!</div>Tell me the exact topic and I'll explain it clearly! 🌟`;
+  }
+
+  // Default
+  if(isRiri) return `Ooooh tell me more! 🦕✨ I want to help! Can you share the full question so we can figure it out together? I LOVE a good mystery! 🔍😄`;
+  if(p.name==='Bullfrog') return `Okay ${p.nickname}, give me more to work with. What's the full question or assignment? The more specific you are, the better I can actually help. 🎯`;
+  return `I hear you ${p.nickname}! 💜 Share the full question — type it, paste it, or take a photo — and we'll work through it step by step together. You've got this! 🚀`;
+}
+
+// ═══════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// VOICE PICKER
+// ═══════════════════════════════════════
+
+// Curated voice list with friendly names and descriptions
+const VOICE_PRESETS = [
+  { label:'Samantha',    desc:'Warm & Natural',    keywords:['Samantha'],                      gender:'f' },
+  { label:'Google US',   desc:'Clear & Friendly',  keywords:['Google US English'],             gender:'f' },
+  { label:'Jenny',       desc:'Bright & Upbeat',   keywords:['Microsoft Jenny','Jenny'],       gender:'f' },
+  { label:'Zira',        desc:'Smooth & Calm',     keywords:['Microsoft Zira','Zira'],         gender:'f' },
+  { label:'Karen',       desc:'Aussie Accent',     keywords:['Karen'],                         gender:'f' },
+  { label:'Moira',       desc:'Irish Accent',      keywords:['Moira'],                         gender:'f' },
+  { label:'Tessa',       desc:'South African',     keywords:['Tessa'],                         gender:'f' },
+  { label:'Aria',        desc:'Modern & Crisp',    keywords:['Microsoft Aria','Aria'],         gender:'f' },
+  { label:'Sonia',       desc:'Soft & Gentle',     keywords:['Microsoft Sonia','Sonia'],       gender:'f' },
+  { label:'Google AU',   desc:'Australian Accent', keywords:['Google Australian English'],     gender:'f' },
+  { label:'Google UK',   desc:'British Accent',    keywords:['Google UK English Female'],      gender:'f' },
+  { label:'Victoria',    desc:'Classic US',        keywords:['Victoria'],                      gender:'f' },
+  { label:'Guy',         desc:'Deep & Warm (M)',   keywords:['Microsoft Guy','Guy'],           gender:'m' },
+  { label:'Google M',    desc:'Natural Male',      keywords:['Google US English Male'],        gender:'m' },
+];
+
+let availableVoices = [];   // filtered voices found on this device
+let selectedVoiceIdx = {};  // { liya: 0, amirah: 1, riri: 2 } — index into availableVoices
+
+function getProfileVoiceKey(){
+  const p = localStorage.getItem('nova_profile') || 'liya';
+  return 'nova_voice_' + p;
+}
+
+function loadAndBuildVoicePicker(){
+  if(!synth) return;
+  const allVoices = synth.getVoices();
+  if(!allVoices.length){ setTimeout(loadAndBuildVoicePicker, 400); return; }
+
+  // Match curated presets to available voices on this device
+  availableVoices = [];
+  for(const preset of VOICE_PRESETS){
+    for(const kw of preset.keywords){
+      const found = allVoices.find(v => v.name.includes(kw));
+      if(found){
+        availableVoices.push({ voice: found, label: preset.label, desc: preset.desc, gender: preset.gender });
+        break;
+      }
+    }
+  }
+
+  // Fallback: add any en-US voices not already captured
+  for(const v of allVoices){
+    if(v.lang && v.lang.startsWith('en')){
+      const already = availableVoices.find(av => av.voice.name === v.name);
+      if(!already) availableVoices.push({ voice: v, label: v.name.replace('Microsoft ','').replace('Google ','').split(' ')[0], desc: v.lang, gender:'f' });
+    }
+  }
+
+  // Remove dupes
+  const seen = new Set();
+  availableVoices = availableVoices.filter(av => {
+    if(seen.has(av.voice.name)) return false;
+    seen.add(av.voice.name); return true;
+  });
+
+  renderVoiceGrid();
+}
+
+function renderVoiceGrid(){
+  const grid = document.getElementById('voiceGrid');
+  const loading = document.getElementById('voiceLoading');
+  if(!grid) return;
+
+  if(!availableVoices.length){
+    if(loading) loading.textContent = 'No voices found on this device. Try Chrome or Edge!';
+    return;
+  }
+
+  if(loading) loading.style.display = 'none';
+  grid.style.display = 'grid';
+
+  // Get saved voice for current profile
+  const savedName = localStorage.getItem(getProfileVoiceKey()) || '';
+
+  grid.innerHTML = availableVoices.map((av, i) => {
+    const isSelected = savedName ? av.voice.name === savedName : i === 0;
+    return `<div class="voice-card ${isSelected?'selected':''}" id="vc_${i}" onclick="selectVoice(${i})">
+      <div class="vc-name">${av.gender==='m'?'🎙':'🎤'} ${av.label}</div>
+      <div class="vc-desc">${av.desc}</div>
+      <div class="vc-preview" onclick="event.stopPropagation();previewSingleVoice(${i})">▶ Preview</div>
+    </div>`;
+  }).join('');
+
+  // Apply saved voice
+  if(savedName){
+    const idx = availableVoices.findIndex(av => av.voice.name === savedName);
+    if(idx >= 0){ prefVoice = availableVoices[idx].voice; }
+  } else if(availableVoices.length) {
+    prefVoice = availableVoices[0].voice;
+  }
+}
+
+function selectVoice(idx){
+  if(idx < 0 || idx >= availableVoices.length) return;
+  prefVoice = availableVoices[idx].voice;
+  localStorage.setItem(getProfileVoiceKey(), prefVoice.name);
+
+  // Update UI
+  document.querySelectorAll('.voice-card').forEach((el,i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+}
+
+function previewSingleVoice(idx){
+  if(idx < 0 || idx >= availableVoices.length) return;
+  stopSpeak();
+  const p = currentProfile || PROFILES.liya;
+  const previewText = `Hi ${p.spokenNickname||p.nickname}! I'm NOVA, your study companion. Let's learn something amazing today!`;
+  const u = new SpeechSynthesisUtterance(previewText);
+  u.voice = availableVoices[idx].voice;
+  u.rate = 0.93; u.pitch = 1.06; u.volume = 1;
+  synth.speak(u);
+}
+
+function previewVoice(){
+  if(!prefVoice){ showCopyFeedback('Pick a voice first!','#fb923c'); return; }
+  const p = currentProfile || PROFILES.liya;
+  const idx = availableVoices.findIndex(av => av.voice.name === prefVoice.name);
+  if(idx >= 0) previewSingleVoice(idx);
+}
+
+function applyProfileVoice(){
+  // Called when profile loads — restore that profile's saved voice
+  const savedName = localStorage.getItem(getProfileVoiceKey());
+  if(!savedName) return;
+  if(!availableVoices.length){ setTimeout(applyProfileVoice, 400); return; }
+  const found = availableVoices.find(av => av.voice.name === savedName);
+  if(found) prefVoice = found.voice;
+}
+
+function openSettings(){
+  const ov=document.getElementById('settingsOverlay');
+  if(!ov) return;
+  ov.classList.add('open');
+  const ki=document.getElementById('settingsKeyIn');
+  if(ki) ki.value=apiKey||'';
+  const tw=document.getElementById('speakToggle');
+  if(tw){ if(autoSpeak) tw.classList.add('on'); else tw.classList.remove('on'); }
+  const tl=document.getElementById('speakToggleLabel');
+  if(tl) tl.textContent=autoSpeak?'On — NOVA speaks every response':'Off — tap Read aloud on messages';
+  // Build voice picker every time settings opens (voices may have loaded since last open)
+  loadAndBuildVoicePicker();
+}
+
+function closeSettings(){
+  const ov=document.getElementById('settingsOverlay');
+  if(ov) ov.classList.remove('open');
+}
+
+function settingsBgClick(e){
+  if(e.target===document.getElementById('settingsOverlay')) closeSettings();
+}
+
+function updateKey(){
+  const val=(document.getElementById('settingsKeyIn').value||'').trim();
+  if(!val){ showCopyFeedback('Please enter a key first.','#ff6b6b'); return; }
+  if(!val.startsWith('sk-')){ showCopyFeedback("Doesn't look right — should start with sk-",'#ff6b6b'); return; }
+  apiKey=val; localStorage.setItem('nova_key',val);
+  showCopyFeedback('✅ Key saved!');
+}
+
+function copyKey(){
+  if(!apiKey){ showCopyFeedback('No key saved yet.','#ff6b6b'); return; }
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(apiKey).then(()=>showCopyFeedback('✅ Copied to clipboard!')).catch(()=>fallbackCopy());
+  } else { fallbackCopy(); }
+}
+
+function fallbackCopy(){
+  const ta=document.createElement('textarea');
+  ta.value=apiKey; ta.style.cssText='position:fixed;opacity:0;';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try{ document.execCommand('copy'); showCopyFeedback('✅ Copied!'); }
+  catch(e){ showCopyFeedback('Key: '+apiKey.slice(0,12)+'...'); }
+  document.body.removeChild(ta);
+}
+
+function showCopyFeedback(msg, color){
+  const el=document.getElementById('copyMsg');
+  if(!el) return;
+  el.textContent=msg;
+  el.style.color=color||'var(--success)';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+function clearKey(){
+  if(!confirm('Remove API key? NOVA switches to Demo Mode.')) return;
+  apiKey=''; localStorage.removeItem('nova_key');
+  const ki=document.getElementById('settingsKeyIn');
+  if(ki) ki.value='';
+  closeSettings();
+  showAchieve('API key removed. Demo Mode active.');
+}
+
+function resetAll(){
+  if(!confirm('Reset EVERYTHING — key, stars, streak, chat? This cannot be undone.')) return;
+  localStorage.clear(); location.reload();
+}
+
+function toggleVis(inputId, btnId){
+  const inp=document.getElementById(inputId);
+  const btn=document.getElementById(btnId);
+  if(!inp||!btn) return;
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'👁️':'🙈';
+}
+
+function toggleAutoSpeak(){
+  autoSpeak=!autoSpeak;
+  const tw=document.getElementById('speakToggle');
+  const tl=document.getElementById('speakToggleLabel');
+  if(tw){ if(autoSpeak) tw.classList.add('on'); else tw.classList.remove('on'); }
+  if(tl) tl.textContent=autoSpeak?'On — NOVA speaks every response':'Off — tap Read aloud on messages';
+  if(!autoSpeak) stopSpeak();
+}
+
+// ═══════════════════════════════════════
+// API KEY FLOW
+// ═══════════════════════════════════════
+function saveKey(){
+  const val=(document.getElementById('apiKeyIn').value||'').trim();
+  if(!val.startsWith('sk-')){ alert("That doesn't look right — the key should start with sk-"); return; }
+  apiKey=val; localStorage.setItem('nova_key',val);
+  document.getElementById('apiOverlay').classList.remove('open');
+  initApp();
+}
+
+function skipKey(){
+  document.getElementById('apiOverlay').classList.remove('open');
+  initApp();
+}
+
+// ═══════════════════════════════════════
+// IMAGE & FILE
+// ═══════════════════════════════════════
+function triggerImg(){ document.getElementById('imgInput').click(); }
+function triggerFile(){ document.getElementById('fileInput').click(); }
+
+function onImg(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    pendingImgB64=ev.target.result; pendingImgFile=f;
+    const pi=document.getElementById('imgPrev');
+    const pimg=document.getElementById('prevImg');
+    const pn=document.getElementById('prevName');
+    const ci=document.getElementById('chatIn');
+    if(pi) pi.classList.add('show');
+    if(pimg) pimg.src=ev.target.result;
+    if(pn) pn.textContent=f.name;
+    if(ci) ci.placeholder='I can see your image! Describe what you need help with, or just hit send 📸';
+  };
+  r.readAsDataURL(f);
+  e.target.value='';
+}
+
+function clearImg(){
+  pendingImgB64=null; pendingImgFile=null;
+  const pi=document.getElementById('imgPrev');
+  const pimg=document.getElementById('prevImg');
+  const ci=document.getElementById('chatIn');
+  if(pi) pi.classList.remove('show');
+  if(pimg) pimg.src='';
+  if(ci) ci.placeholder='Type here or tap the orb to talk 💜';
+}
+
+function onFile(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    const content=ev.target.result;
+    const ci=document.getElementById('chatIn');
+    if(ci){ ci.value=`File: "${f.name}"\n\n${content.substring(0,3000)}`; autoResize(ci); }
+  };
+  r.readAsText(f);
+  e.target.value='';
+}
+
+// ═══════════════════════════════════════
+// MOBILE DRAWER
+// ═══════════════════════════════════════
+function openDrawer(){
+  const d=document.getElementById('mobDrawer');
+  if(!d) return;
+  d.classList.add('open');
+}
+
+function closeDrawer(){
+  const d=document.getElementById('mobDrawer');
+  if(!d) return;
+  d.classList.remove('open');
+}
+
+function drawerBg(e){
+  if(e.target===document.getElementById('mobDrawer')) closeDrawer();
+}
+
+function drawerSub(el,name,icon){
+  document.querySelectorAll('.d-item').forEach(d=>d.classList.remove('active'));
+  if(el) el.classList.add('active');
+  setSub(null,name,icon);
+  closeDrawer();
+}
+
+function mobSub(el,name,icon){
+  document.querySelectorAll('.mob-tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  setSub(null,name,icon);
+}
+
+// Swipe down to close drawer
+(function(){
+  let sy=0;
+  document.addEventListener('touchstart',e=>{
+    if(document.getElementById('mobDrawer').classList.contains('open')) sy=e.touches[0].clientY;
+  },{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(document.getElementById('mobDrawer').classList.contains('open')){
+      if(e.changedTouches[0].clientY-sy>80) closeDrawer();
+    }
+  },{passive:true});
+})();
+
+// ═══════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════
+function onKey(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMsg(); } }
+function autoResize(el){ if(!el) return; el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+function clearChat(){
+  if(!confirm('Clear chat? Stars and streak stay! 💜')) return;
+  document.getElementById('chat').innerHTML='';
+  chatHistory=[];
+  initWelcome();
+}
+
+// ═══════════════════════════════════════
+// WELCOME MESSAGE
+// ═══════════════════════════════════════
+function initWelcome(){
+  if(!currentProfile) return;
+  const p=currentProfile;
+  const hour=new Date().getHours();
+  const greet=hour<12?'Good morning':'Hey';
+  const isRiri=p.name==='Riri';
+
+  // Birthday banner
+  const bctx=getBdayContext(localStorage.getItem('nova_profile')||'liya');
+  let bdayBanner='';
+  if(bctx&&bctx.type==='mine'){
+    bdayBanner=`<div style="background:linear-gradient(135deg,rgba(255,107,157,0.18),rgba(139,92,246,0.18));border:2px solid var(--a1);border-radius:14px;padding:14px;margin:10px 0;text-align:center;"><div style="font-size:1.4rem;margin-bottom:5px;">🎂🎉🎊🎈</div><div style="font-size:1rem;font-weight:800;color:var(--a1);">HAPPY BIRTHDAY ${p.nickname.toUpperCase()}!!! 🎂</div><div style="font-size:0.84rem;margin-top:5px;">It's YOUR day! You deserve every good thing coming your way! 💜</div></div>`;
+  } else if(bctx&&bctx.type==='sibling'){
+    bdayBanner=`<div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:11px;margin:8px 0;font-size:0.84rem;">🎂 Today is ${bctx.label}! Go give your sister a hug! 💜</div>`;
+  } else if(bctx&&bctx.type==='upcoming'){
+    const notes=bctx.list.map(b=>`<strong>${b.label}</strong> in ${b.diff} day${b.diff>1?'s':''}!`).join(' ');
+    bdayBanner=`<div style="background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);border-radius:11px;padding:10px;margin:8px 0;font-size:0.82rem;">🎈 Coming up soon: ${notes}</div>`;
+  }
+
+  let welcome='';
+  if(isRiri){
+    welcome=`${greet} ${p.nickname}! 🦕✨ I'm <strong>NOVA</strong> and I'm SO happy to see you!<br><br>${bdayBanner}Let's have an AMAZING study adventure today! Here's what I can do:<br>• 🦕 <strong>Make any subject super fun!</strong><br>• 🎙️ <strong>Talk to you</strong> — tap the glowing orb!<br>• 📷 <strong>Look at your homework</strong> pictures!<br>• 🌟 <strong>Give you challenges</strong> to keep things exciting!<br><br><div class="tip-card">💡 <strong>Did you know?</strong> Scientists use math, reading, AND science every single day — just like what you're learning now! 🦕🔬</div>What subject are we exploring today, future scientist? 🎉`;
+  } else if(p.name==='Bullfrog'){
+    welcome=`${greet}, ${p.nickname}. 😏 NOVA here — your study partner, debate opponent, and the one who's going to help you actually understand this stuff instead of just memorizing it.<br><br>${bdayBanner}What's on the agenda? Drop the subject, paste the homework, or just tell me what's on your mind. Let's get into it. ⚖️`;
+  } else {
+    welcome=`${greet} ${p.nickname}! 💜 I'm <strong>NOVA</strong> — so glad you're here today.<br><br>${bdayBanner}I'm here to explain anything step by step, help with homework, quiz you, and cheer you on the whole way.<br>• 🎙️ <strong>Tap the orb to talk to me hands-free</strong><br>• 📷 <strong>Upload a photo of your homework</strong><br>• 📚 <strong>Any subject</strong> — pick from the sidebar<br>• 💜 <strong>K-Pop energy boosts</strong> whenever you need them!<br><br><div class="tip-card">💡 Everything we study connects to your future as a detective. Every subject builds your toolkit! 🔍</div>What are we working on today? 🚀`;
+  }
+  addMsg('nova',welcome,true);
+}
+
+// ═══════════════════════════════════════
+// INIT APP
+// ═══════════════════════════════════════
+function initApp(){
+  if(!currentProfile) return;
+
+  // Stars & streak
+  document.getElementById('starCount').textContent=stars;
+  document.getElementById('streakCount').textContent=streak;
+  const today=new Date().toDateString();
+  const last=localStorage.getItem('nova_last');
+  if(last!==today){
+    const yest=new Date(); yest.setDate(yest.getDate()-1);
+    streak=(last===yest.toDateString())?streak+1:1;
+    localStorage.setItem('nova_streak',streak);
+    localStorage.setItem('nova_last',today);
+    document.getElementById('streakCount').textContent=streak;
+    if(streak>1) setTimeout(()=>showAchieve(`Day ${streak} streak! You showed up! 🔥`),2000);
+  }
+
+  // K-Pop panel
+  const kf=document.getElementById('kpFact');
+  if(kf) kf.innerHTML=currentProfile.kpopFacts[0];
+
+  updateProgress();
+  updateQuickStart();
+  updateCareer();
+  initWelcome();
+}
+
+// ═══════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  buildStars();
+  if(synth){
+    synth.getVoices();
+    synth.onvoiceschanged = () => { loadVoices(); setTimeout(loadAndBuildVoicePicker, 200); };
+    setTimeout(loadVoices, 400);
+    setTimeout(loadAndBuildVoicePicker, 600);
+  }
+  reqMic();
+
+  // Check if returning user with saved profile
+  const savedProfile=localStorage.getItem('nova_profile');
+  if(savedProfile&&PROFILES[savedProfile]){
+    currentProfile=PROFILES[savedProfile];
+    applyTheme(savedProfile);
+    setTimeout(applyProfileVoice, 700);
+    document.getElementById('profileScreen').style.display='none';
+    document.getElementById('appContainer').style.display='flex';
+    if(!apiKey){
+      document.getElementById('apiOverlay').classList.add('open');
+    } else {
+      initApp();
+    }
+  }
+  // Otherwise profile screen is already showing from HTML
+});
+</script>
+</body>
+</html>
+
+
