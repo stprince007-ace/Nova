@@ -333,8 +333,16 @@ header{
 
 /* MOBILE */
 .mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,16,0.97);border-top:1px solid rgba(255,255,255,0.08);z-index:200;padding-bottom:env(safe-area-inset-bottom);}
-.mob-tabs{display:flex;overflow-x:auto;scrollbar-width:none;}
+.mob-tabs{
+  display:flex;
+  overflow-x:auto;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;
+}
 .mob-tabs::-webkit-scrollbar{display:none;}
+.mob-tab{ scroll-snap-align:start; }
 .mob-tab{flex:0 0 auto;background:transparent;border:none;padding:9px 13px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:'Nunito',sans-serif;font-size:0.58rem;font-weight:700;color:var(--soft);cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;min-width:55px;position:relative;}
 .mob-tab .m-ico{font-size:1.2rem;line-height:1;}
 .mob-tab.active{color:var(--a1);}
@@ -343,10 +351,26 @@ header{
 .mob-fab:active{transform:scale(0.9);}
 .mob-drawer{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);}
 .mob-drawer.open{display:block;}
-.drawer-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:22px 22px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));max-height:74vh;overflow-y:auto;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);}
+.drawer-sheet{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--surface);
+  border-radius:22px 22px 0 0;
+  padding:14px 14px calc(20px + env(safe-area-inset-bottom));
+  max-height:80svh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  transform:translateY(100%);
+  transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
+}
 .mob-drawer.open .drawer-sheet{transform:translateY(0);}
-.drawer-handle{width:38px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin:0 auto 14px;}
-.drawer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+
+.drawer-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+  padding-bottom:8px;
+}
 .d-item{background:var(--surface2);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px 5px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:all 0.2s;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;color:var(--soft);text-align:center;}
 .d-item:active{transform:scale(0.94);}
 .d-item.active{background:linear-gradient(135deg,rgba(255,107,157,0.18),rgba(139,92,246,0.18));border-color:rgba(255,107,157,0.35);color:var(--text);}
@@ -399,17 +423,11 @@ header{
     flex-direction:column;
     flex:1;
     min-height:0;
-    /* Leave room for fixed input area + mob bar at bottom */
-    padding-bottom:calc(110px + env(safe-area-inset-bottom));
+    /* Leave room for fixed orb + input area + mob bar */
+    padding-bottom:calc(160px + env(safe-area-inset-bottom));
   }
 
-  /* Status bar */
-  .nova-status{ padding:4px 10px;flex-shrink:0; }
-  .nova-state{ font-size:0.7rem; }
-  #stateLabel{ display:none; }
-  .m-pill{ padding:3px 8px;font-size:0.66rem; }
-
-  /* Chat — scrollable middle */
+  /* Chat — scrollable, fills available space */
   .chat{
     flex:1;
     min-height:0;
@@ -419,15 +437,30 @@ header{
   }
   .bubble{ max-width:92%;font-size:0.84rem;padding:9px 12px; }
 
-  /* Voice orb */
-  .voice-center{ padding:3px 10px 2px;gap:2px;flex-shrink:0; }
+  /* Voice orb — fixed just above input area */
+  .voice-center{
+    position:fixed;
+    bottom:calc(100px + env(safe-area-inset-bottom));
+    left:0; right:0;
+    z-index:140;
+    padding:4px 10px 2px;
+    gap:2px;
+    background:transparent;
+    pointer-events:auto;
+  }
   .orb-wrap{ width:46px;height:46px; }
   .orb{ width:46px;height:46px;font-size:1.15rem; }
   .orb-ring{ inset:-4px; }
   .orb-hint{ font-size:0.6rem; }
 
-  /* Typing indicator */
-  .typing-wrap{ padding:0 10px 4px;flex-shrink:0; }
+  /* Typing indicator — fixed above orb */
+  .typing-wrap{
+    position:fixed;
+    bottom:calc(148px + env(safe-area-inset-bottom));
+    left:10px;
+    z-index:140;
+    padding:0;
+  }
 
   /* INPUT AREA — fixed to bottom, sits above mob-bar */
   .input-area{
@@ -1176,11 +1209,22 @@ function selectProfile(key){
 }
 
 function showProfileScreen(){
-  stopSpeak(); stopListen();
+  stopSpeak();
+  stopListen();
+  stopProfileListen();
+  hideTyping();
   chatHistory=[];
-  document.getElementById('appContainer').style.display='none';
-  document.getElementById('profileScreen').style.display='flex';
-  document.getElementById('chat').innerHTML='';
+  msgCount=0;
+  pendingImgB64=null;
+  pendingImgFile=null;
+  isIdle=false;
+  clearImg();
+  const chat=document.getElementById('chat');
+  if(chat) chat.innerHTML='';
+  const app=document.getElementById('appContainer');
+  const ps=document.getElementById('profileScreen');
+  if(app) app.style.display='none';
+  if(ps)  ps.style.display='flex';
 }
 
 function applyTheme(key){
@@ -1215,23 +1259,27 @@ function setState(s){
 function toggleIdle(){
   if(isListening||isSpeaking) return;
   isIdle=!isIdle;
-  const badge=document.getElementById('statusBadge');
-  const orb=document.getElementById('headerOrb');
-  const hint=document.getElementById('orbHint');
+  const badge  = document.getElementById('statusBadge');
+  const stTxt  = document.getElementById('statusTxt');  // use existing span — no innerHTML
+  const orb    = document.getElementById('headerOrb');
+  const hint   = document.getElementById('orbHint');
+  const dot    = document.getElementById('stateDot');
+  const lbl    = document.getElementById('stateLabel');
+  if(!badge) return;
   if(isIdle){
-    badge.className='badge live idle-mode';
-    badge.innerHTML='⚪ <span id="statusTxt">Idle</span>';
-    document.getElementById('stateDot').className='sdot';
-    document.getElementById('stateLabel').textContent='NOVA is resting — tap badge to wake';
-    if(orb){orb.style.animation='none';orb.style.opacity='0.3';orb.textContent='💤';}
-    if(hint) hint.textContent='NOVA is resting — tap the status badge to wake her up';
+    badge.className = 'badge live idle-mode';
+    if(stTxt)  stTxt.textContent  = 'Idle';
+    if(dot)    dot.className      = 'sdot';
+    if(lbl)    lbl.textContent    = 'NOVA is resting — tap badge to wake';
+    if(orb){   orb.style.animation='none'; orb.style.opacity='0.3'; orb.textContent='💤'; }
+    if(hint)   hint.textContent   = 'NOVA is resting — tap the status badge to wake her up';
   } else {
-    badge.className='badge live';
-    badge.innerHTML='🟢 <span id="statusTxt">Ready</span>';
+    badge.className = 'badge live';
+    if(stTxt)  stTxt.textContent  = 'Ready';
     setState('ready');
-    if(orb){orb.style.animation='';orb.style.opacity='1';orb.textContent='✨';}
-    if(hint) hint.textContent='Tap the orb to talk to NOVA 💜';
-    addMsg('nova',"I'm back! 😊 What are we working on? 💜",true);
+    if(orb){   orb.style.animation=''; orb.style.opacity='1'; orb.textContent='✨'; }
+    if(hint)   hint.textContent   = 'Tap the orb to talk to NOVA 💜';
+    addMsg('nova',"I'm back! 😊 What are we working on? 💜", true);
   }
 }
 
@@ -1299,6 +1347,8 @@ function showAchieve(txt){
 // SUBJECT & MODE
 // ═══════════════════════════════════════
 function setSub(btn, name, icon){
+  if(!currentProfile) return;  // guard: no profile yet
+  stopSpeak();                  // stop any speaking when switching subject
   document.querySelectorAll('.s-btn').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
   subject=name; chatHistory=[];
@@ -1477,7 +1527,8 @@ async function sendMsg(){
   if(!input) return;
   const txt=input.value.trim();
   if(!txt&&!pendingImgB64) return;
-
+  // Guard: do not send if no profile selected yet
+  if(!currentProfile){ addMsg('nova','Please select your profile first! Tap the 👤 button. 💜'); return; }
   if(isIdle){ toggleIdle(); return; }
   stopSpeak();
 
@@ -1903,8 +1954,17 @@ function onKey(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMsg
 function autoResize(el){ if(!el) return; el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
 function clearChat(){
   if(!confirm('Clear chat? Stars and streak stay! 💜')) return;
-  document.getElementById('chat').innerHTML='';
+  stopSpeak();
+  stopListen();
+  const chatEl = document.getElementById('chat');
+  if(chatEl) chatEl.innerHTML='';
   chatHistory=[];
+  msgCount=0;
+  pendingImgB64=null;
+  pendingImgFile=null;
+  clearImg();
+  hideTyping();
+  setState('ready');
   initWelcome();
 }
 
