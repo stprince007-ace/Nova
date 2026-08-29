@@ -12,7 +12,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Orbitron:wght@700;900&display=swap');
 
-/* ── CSS VARIABLES (default = Liya theme) ── */
+/* ── CSS VARIABLES (default = Leah theme) ── */
 :root {
   --bg:#080810; --surface:#10101e; --surface2:#16162a; --surface3:#1e1e35;
   --a1:#ff6b9d; --a2:#8b5cf6; --a3:#06b6d4; --a4:#fbbf24;
@@ -541,7 +541,7 @@ header{
   <div class="profile-cards">
     <div class="profile-card liya" onclick="selectProfile('liya')">
       <div class="p-avatar liya">👩</div>
-      <div class="p-name">Liya</div>
+      <div class="p-name">Leah</div>
       <div class="p-grade liya">11th Grade</div>
       <div class="p-desc">Future Detective 🔍<br/>Stray Kids & ATEEZ</div>
     </div>
@@ -549,7 +549,7 @@ header{
       <div class="p-avatar amirah">⚖️</div>
       <div class="p-name">Bullfrog</div>
       <div class="p-grade amirah">10th Grade</div>
-      <div class="p-desc">Future Lawyer ⚖️<br/>Onlyoneoff & more</div>
+      <div class="p-desc">Future Lawyer ⚖️<br/>Onlyoneof & more</div>
     </div>
     <div class="profile-card riri" onclick="selectProfile('riri')">
       <div class="p-avatar riri">🦕</div>
@@ -797,7 +797,7 @@ header{
 // ═══════════════════════════════════════
 const PROFILES = {
   liya: {
-    name:'Liya', fullName:'Aaliyah', nickname:'Liya', seriousName:'Aaliyah',
+    name:'Leah', fullName:'Aaliyah', nickname:'Leah', seriousName:'Aaliyah',
     age:16, grade:'11th grade', gpa:'working to improve',
     career:'Police Officer then Detective',
     careerItems:[
@@ -845,12 +845,12 @@ const PROFILES = {
     theme:'amirah',
     birthday:{month:7,day:20},
     kpopFacts:[
-      `<strong>Onlyoneoff's BYC</strong> writes lyrics that are genuinely poetic and layered — the kind of depth that takes real intelligence to appreciate. Sound like anyone you know? 😏`,
-      `<strong>Onlyoneoff</strong> is criminally underrated — which is honestly perfect for someone with taste this specific. Being ahead of the curve is a flex. ⚖️`,
+      `<strong>Onlyoneof's BYC</strong> writes lyrics that are genuinely poetic and layered — the kind of depth that takes real intelligence to appreciate. Sound like anyone you know? 😏`,
+      `<strong>Onlyoneof</strong> is criminally underrated — which is honestly perfect for someone with taste this specific. Being ahead of the curve is a flex. ⚖️`,
       `<strong>Bang Chan from Stray Kids</strong> produces, writes, AND manages his team. A real multi-threat. Lawyers do the same — research, argue, strategize, all at once. 💼`,
       `<strong>ATEEZ</strong> built their empire through sheer relentless work and strategy — very lawyer-coded if you think about it. Plan. Execute. Win. 🏆`,
       `<strong>Felix's</strong> confidence on stage is studied and deliberate — just like how great lawyers own the courtroom. Presence is everything. 💫`,
-      `<strong>Onlyoneoff</strong> blends genres nobody else would dare mix. The best lawyers do the same with arguments — unexpected angles that actually work. 🎯`,
+      `<strong>Onlyoneof</strong> blends genres nobody else would dare mix. The best lawyers do the same with arguments — unexpected angles that actually work. 🎯`,
     ],
     starters:{
       Math:['Explain this concept clearly','Challenge me with a hard problem','Show me the logic behind this'],
@@ -900,7 +900,7 @@ const PROFILES = {
 // BIRTHDAYS
 // ═══════════════════════════════════════
 const FAMILY_BDAYS = [
-  {month:6,  day:20, who:'liya',   label:"Liya's Birthday"},
+  {month:6,  day:20, who:'liya',   label:"Leah's Birthday"},
   {month:7,  day:20, who:'amirah', label:"Amirah's Birthday"},
   {month:5,  day:17, who:'riri',   label:"Riri's Birthday"},
 ];
@@ -1117,7 +1117,7 @@ function startProfileListen(){
   profileRecog.onstart=()=>{
     profileListenActive=true;
     document.getElementById('profileVlDot').classList.add('active');
-    document.getElementById('profileVlText').textContent='Listening... say Liya, Bullfrog, or Riri!';
+    document.getElementById('profileVlText').textContent='Listening... say Leah, Bullfrog, or Riri!';
   };
   profileRecog.onresult=e=>{
     const t=e.results[0][0].transcript.toLowerCase().trim();
@@ -1125,7 +1125,7 @@ function startProfileListen(){
     if(t.includes('liya')||t.includes('aaliyah')) selectProfile('liya');
     else if(t.includes('bullfrog')||t.includes('amirah')||t.includes('frog')) selectProfile('amirah');
     else if(t.includes('riri')||t.includes('ariah')||t.includes('ria')) selectProfile('riri');
-    else document.getElementById('profileVlText').textContent='Hmm, try again — say Liya, Bullfrog, or Riri!';
+    else document.getElementById('profileVlText').textContent='Hmm, try again — say Leah, Bullfrog, or Riri!';
   };
   profileRecog.onend=()=>{ stopProfileListen(); };
   profileRecog.onerror=()=>{
@@ -2057,5 +2057,6 @@ window.addEventListener('DOMContentLoaded',()=>{
 </script>
 </body>
 </html>
+
 
 
