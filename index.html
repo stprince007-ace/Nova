@@ -355,26 +355,158 @@ header{
 
 @media(max-width:960px){.right{display:none;}}
 @media(max-width:700px){.sidebar{width:48px;min-width:48px;}.s-btn span:not(.ico){display:none;}.s-label,.s-div{display:none;}}
-@media(max-width:540px){
-  body{height:100dvh;max-height:100dvh;}
-  header{padding:7px 12px;}
-  .logo{font-size:1.05rem;}.tagline{display:none;}.nova-orb{width:32px;height:32px;font-size:0.95rem;}
-  .badge.fire{display:none;}.badge{padding:3px 9px;font-size:0.7rem;}
-  .sidebar{display:none;}
-  .app{height:calc(100dvh - 52px);}
-  .nova-status{padding:5px 10px;}.nova-state{font-size:0.72rem;}#stateLabel{display:none;}
-  .m-pill{padding:3px 9px;font-size:0.68rem;}
-  .chat{padding:9px 11px 5px;gap:9px;}
-  .bubble{max-width:91%;font-size:0.85rem;padding:10px 13px;}
-  .voice-center{padding:3px 10px 2px;}
-  .orb-wrap{width:50px;height:50px;}.orb{width:50px;height:50px;font-size:1.25rem;}.orb-ring{inset:-5px;}
-  .input-area{padding:6px 11px calc(58px + env(safe-area-inset-bottom)) 11px;}
-  .tool-row{gap:4px;margin-bottom:6px;}.t-btn{padding:4px 9px;font-size:0.68rem;}
-  .chat-in{font-size:0.85rem;padding:9px 12px;}.send-btn{width:38px;height:38px;}
-  .mob-bar{display:block;}.mob-fab{display:flex;}
-  .achieve{right:8px;left:8px;max-width:none;transform:translateY(-120px);}.achieve.show{transform:translateY(0);}
-  .profile-cards{flex-direction:column;align-items:center;}
-  .profile-card{max-width:280px;width:100%;}
+
+/* ── MOBILE ≤600px ── */
+@media(max-width:600px){
+
+  /* Full screen — respect iPhone notch top & home bar bottom */
+  html{ height:100%; }
+  body{
+    height:100svh;
+    max-height:100svh;
+    overflow:hidden;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Header — tighter, nothing cut off */
+  header{
+    padding:6px 12px;
+    min-height:48px;
+    flex-shrink:0;
+  }
+  .logo{ font-size:1rem; }
+  .tagline{ display:none; }
+  .nova-orb{ width:30px;height:30px;font-size:0.88rem; }
+  .badge.fire{ display:none; }
+  .badge{ padding:3px 8px;font-size:0.68rem;gap:4px; }
+  .gear-btn,.profile-btn{ width:28px;height:28px;font-size:0.82rem; }
+  .hdr-right{ gap:5px; }
+
+  /* Hide desktop sidebar */
+  .sidebar{ display:none; }
+
+  /* App fills remaining height exactly */
+  .app{
+    height:calc(100svh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    overflow:hidden;
+  }
+
+  /* Status bar — slimmer */
+  .nova-status{ padding:4px 10px;flex-shrink:0; }
+  .nova-state{ font-size:0.7rem; }
+  #stateLabel{ display:none; }
+  .m-pill{ padding:3px 8px;font-size:0.66rem; }
+
+  /* Chat scrolls in its own space */
+  .chat{
+    padding:8px 10px 4px;
+    gap:8px;
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+  }
+  .bubble{ max-width:92%;font-size:0.84rem;padding:9px 12px; }
+
+  /* Voice orb — smaller */
+  .voice-center{ padding:3px 10px 1px;gap:2px;flex-shrink:0; }
+  .orb-wrap{ width:46px;height:46px; }
+  .orb{ width:46px;height:46px;font-size:1.15rem; }
+  .orb-ring{ inset:-4px; }
+  .orb-hint{ font-size:0.6rem; }
+
+  /* Input area — sits above the bottom nav bar */
+  .input-area{
+    padding:5px 10px 6px;
+    flex-shrink:0;
+    /* Push content above mobile nav bar (56px) */
+    margin-bottom:56px;
+  }
+
+  /* Tool buttons row — scrollable horizontally, never wraps */
+  .tool-row{
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    gap:5px;
+    margin-bottom:6px;
+    padding-bottom:2px;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  .tool-row::-webkit-scrollbar{ display:none; }
+  .t-btn{
+    padding:5px 10px;
+    font-size:0.68rem;
+    flex-shrink:0;
+    white-space:nowrap;
+  }
+
+  /* Input row */
+  .chat-in{ font-size:0.85rem;padding:8px 11px; }
+  .send-btn{ width:38px;height:38px;font-size:1rem;flex-shrink:0; }
+
+  /* Bottom nav bar — fixed, always visible */
+  .mob-bar{
+    display:block;
+    position:fixed;
+    bottom:0; left:0; right:0;
+    height:56px;
+    z-index:200;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .mob-tab{ min-width:52px;padding:8px 10px 6px;font-size:0.56rem; }
+  .mob-tab .m-ico{ font-size:1.1rem; }
+
+  /* FAB button above nav bar */
+  .mob-fab{
+    display:flex;
+    bottom:calc(60px + env(safe-area-inset-bottom));
+    right:12px;
+    width:40px;height:40px;font-size:1.1rem;
+  }
+
+  /* Achievement toast */
+  .achieve{
+    right:8px;left:8px;max-width:none;
+    top:auto;
+    bottom:calc(70px + env(safe-area-inset-bottom));
+    transform:translateY(120px);
+  }
+  .achieve.show{ transform:translateY(0); }
+
+  /* Profile screen — fits on small screens */
+  .profile-screen{
+    padding:16px 14px;
+    gap:12px;
+    overflow-y:auto;
+  }
+  .profile-title{ font-size:1.05rem; }
+  .profile-sub{ font-size:0.72rem; }
+  .profile-cards{
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    width:100%;
+  }
+  .profile-card{
+    max-width:100%;
+    width:100%;
+    flex-direction:row;
+    padding:14px 16px;
+    gap:14px;
+    text-align:left;
+  }
+  .p-avatar{ width:52px;height:52px;font-size:1.5rem;flex-shrink:0; }
+  .p-name{ font-size:0.95rem; }
+  .p-desc{ font-size:0.68rem; }
+
+  /* API & settings box */
+  .api-box{ padding:22px 18px; }
+  .api-box h2{ font-size:1.05rem; }
+  .api-box p{ font-size:0.8rem; }
+  .settings-box{ padding:20px 16px; }
+  .voice-grid{ grid-template-columns:1fr 1fr; }
 }
 </style>
 </head>
@@ -1759,32 +1891,69 @@ function clearChat(){
 // ═══════════════════════════════════════
 function initWelcome(){
   if(!currentProfile) return;
-  const p=currentProfile;
-  const hour=new Date().getHours();
-  const greet=hour<12?'Good morning':'Hey';
-  const isRiri=p.name==='Riri';
+  const p = currentProfile;
+  const profileKey = localStorage.getItem('nova_profile') || 'liya';
+  const hour = new Date().getHours();
+  const isRiri = p.name === 'Riri';
 
-  // Birthday banner
-  const bctx=getBdayContext(localStorage.getItem('nova_profile')||'liya');
-  let bdayBanner='';
-  if(bctx&&bctx.type==='mine'){
-    bdayBanner=`<div style="background:linear-gradient(135deg,rgba(255,107,157,0.18),rgba(139,92,246,0.18));border:2px solid var(--a1);border-radius:14px;padding:14px;margin:10px 0;text-align:center;"><div style="font-size:1.4rem;margin-bottom:5px;">🎂🎉🎊🎈</div><div style="font-size:1rem;font-weight:800;color:var(--a1);">HAPPY BIRTHDAY ${p.nickname.toUpperCase()}!!! 🎂</div><div style="font-size:0.84rem;margin-top:5px;">It's YOUR day! You deserve every good thing coming your way! 💜</div></div>`;
-  } else if(bctx&&bctx.type==='sibling'){
-    bdayBanner=`<div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:11px;margin:8px 0;font-size:0.84rem;">🎂 Today is ${bctx.label}! Go give your sister a hug! 💜</div>`;
-  } else if(bctx&&bctx.type==='upcoming'){
-    const notes=bctx.list.map(b=>`<strong>${b.label}</strong> in ${b.diff} day${b.diff>1?'s':''}!`).join(' ');
-    bdayBanner=`<div style="background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);border-radius:11px;padding:10px;margin:8px 0;font-size:0.82rem;">🎈 Coming up soon: ${notes}</div>`;
+  // Time-based greeting
+  const greet = hour<12 ? 'Good morning' : hour<17 ? 'Hey' : hour<21 ? 'Good evening' : 'Hey night owl';
+
+  // Birthday banner — always show regardless of first/returning
+  const bctx = getBdayContext(profileKey);
+  let bdayBanner = '';
+  if(bctx && bctx.type==='mine'){
+    bdayBanner = `<div style="background:linear-gradient(135deg,rgba(255,107,157,0.18),rgba(139,92,246,0.18));border:2px solid var(--a1);border-radius:14px;padding:14px;margin:10px 0;text-align:center;"><div style="font-size:1.4rem;margin-bottom:5px;">🎂🎉🎊🎈</div><div style="font-size:1rem;font-weight:800;color:var(--a1);">HAPPY BIRTHDAY ${p.nickname.toUpperCase()}!!! 🎂</div><div style="font-size:0.84rem;margin-top:5px;">It's YOUR day! You deserve every good thing! 💜</div></div>`;
+  } else if(bctx && bctx.type==='sibling'){
+    bdayBanner = `<div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:11px;margin:8px 0;font-size:0.84rem;">🎂 Today is ${bctx.label}! Go give your sister a hug! 💜</div>`;
+  } else if(bctx && bctx.type==='upcoming'){
+    const notes = bctx.list.map(b=>`<strong>${b.label}</strong> in ${b.diff} day${b.diff>1?'s':''}!`).join(' ');
+    bdayBanner = `<div style="background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);border-radius:11px;padding:10px;margin:8px 0;font-size:0.82rem;">🎈 Coming up: ${notes}</div>`;
   }
 
-  let welcome='';
-  if(isRiri){
-    welcome=`${greet} ${p.nickname}! 🦕✨ I'm <strong>NOVA</strong> and I'm SO happy to see you!<br><br>${bdayBanner}Let's have an AMAZING study adventure today! Here's what I can do:<br>• 🦕 <strong>Make any subject super fun!</strong><br>• 🎙️ <strong>Talk to you</strong> — tap the glowing orb!<br>• 📷 <strong>Look at your homework</strong> pictures!<br>• 🌟 <strong>Give you challenges</strong> to keep things exciting!<br><br><div class="tip-card">💡 <strong>Did you know?</strong> Scientists use math, reading, AND science every single day — just like what you're learning now! 🦕🔬</div>What subject are we exploring today, future scientist? 🎉`;
-  } else if(p.name==='Bullfrog'){
-    welcome=`${greet}, ${p.nickname}. 😏 NOVA here — your study partner, debate opponent, and the one who's going to help you actually understand this stuff instead of just memorizing it.<br><br>${bdayBanner}What's on the agenda? Drop the subject, paste the homework, or just tell me what's on your mind. Let's get into it. ⚖️`;
+  // Check if this profile has visited before
+  const firstVisitKey = 'nova_first_' + profileKey;
+  const isFirstVisit = !localStorage.getItem(firstVisitKey);
+
+  // Mark as visited
+  if(isFirstVisit) localStorage.setItem(firstVisitKey, '1');
+
+  let welcome = '';
+
+  if(isFirstVisit){
+    // ── FULL INTRO — first time only ──
+    if(isRiri){
+      welcome = `${greet} ${p.nickname}! 🦕✨ I'm <strong>NOVA</strong> and I'm SO happy to meet you!<br><br>${bdayBanner}Let's have an AMAZING study adventure! Here's what I can do:<br>• 🦕 <strong>Make any subject super fun!</strong><br>• 🎙️ <strong>Talk to you</strong> — tap the glowing orb!<br>• 📷 <strong>Look at your homework pictures!</strong><br>• 🌟 <strong>Give you fun challenges!</strong><br><br><div class="tip-card">💡 Scientists use math, reading AND science every day — just like what you're learning! 🦕🔬</div>What are we exploring today, future scientist? 🎉`;
+    } else if(p.name==='Bullfrog'){
+      welcome = `${greet}, ${p.nickname}. 😏 NOVA here — your study partner, debate opponent, and the one who's going to help you actually <em>understand</em> this stuff instead of just memorizing it.<br><br>${bdayBanner}Quick rundown — tap the orb to talk to me, upload homework photos, pick any subject from the sidebar. All 15 subjects, all yours.<br><br>What's on the agenda? Drop it. ⚖️`;
+    } else {
+      welcome = `${greet} ${p.nickname}! 💜 I'm <strong>NOVA</strong> — so glad you're here.<br><br>${bdayBanner}I'm here to explain anything step by step, help with homework, quiz you, and cheer you on the whole way.<br>• 🎙️ <strong>Tap the orb to talk to me hands-free</strong><br>• 📷 <strong>Upload a photo of your homework</strong><br>• 📚 <strong>Any subject</strong> — pick from the sidebar<br>• 💜 <strong>K-Pop energy boosts</strong> whenever you need them!<br><br><div class="tip-card">💡 Everything we study connects to your future as a detective. Every subject builds your toolkit! 🔍</div>What are we working on today? 🚀`;
+    }
   } else {
-    welcome=`${greet} ${p.nickname}! 💜 I'm <strong>NOVA</strong> — so glad you're here today.<br><br>${bdayBanner}I'm here to explain anything step by step, help with homework, quiz you, and cheer you on the whole way.<br>• 🎙️ <strong>Tap the orb to talk to me hands-free</strong><br>• 📷 <strong>Upload a photo of your homework</strong><br>• 📚 <strong>Any subject</strong> — pick from the sidebar<br>• 💜 <strong>K-Pop energy boosts</strong> whenever you need them!<br><br><div class="tip-card">💡 Everything we study connects to your future as a detective. Every subject builds your toolkit! 🔍</div>What are we working on today? 🚀`;
+    // ── SHORT GREETING — every visit after the first ──
+    const shortGreets = isRiri ? [
+      `${greet} ${p.nickname}! 🦕 Ready for another adventure? What are we learning today?`,
+      `${p.nickname}! 🦕✨ You're back! What subject are we making fun today?`,
+      `Hey hey ${p.nickname}! 🌟 Miss me? What homework do we have today?`,
+      `${p.nickname} is in the building! 🦕 What are we exploring today, scientist?`,
+    ] : p.name==='Bullfrog' ? [
+      `${greet}, ${p.nickname}. 😏 Back for more? What are we getting into today?`,
+      `${p.nickname}. 👀 What's on the docket today?`,
+      `Hey ${p.nickname} — ready to actually understand something today? What subject?`,
+      `${p.nickname} in the building. ⚖️ Drop the assignment. Let's work.`,
+    ] : [
+      `${greet} ${p.nickname}! 💜 Good to see you. What are we working on today?`,
+      `Hey ${p.nickname}! ✨ Ready to crush it? What subject are we tackling?`,
+      `${p.nickname}! 💜 You showed up — that's already a win. What do you need help with?`,
+      `${greet} ${p.nickname}! 🔍 What's on today's agenda?`,
+    ];
+
+    const picked = shortGreets[Math.floor(Math.random() * shortGreets.length)];
+    // Still show birthday banner even on short greeting
+    welcome = bdayBanner ? `${bdayBanner}${picked}` : picked;
   }
-  addMsg('nova',welcome,true);
+
+  addMsg('nova', welcome, true);
 }
 
 // ═══════════════════════════════════════
