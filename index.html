@@ -231,11 +231,7 @@ header{
 .career-row:last-child{border-bottom:none;}
 .cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px;}
 
-/* ACHIEVEMENT */
-.achieve{position:fixed;top:70px;right:16px;background:linear-gradient(135deg,var(--surface2),rgba(42,10,62,0.96));border:2px solid var(--a4);border-radius:16px;padding:14px 18px;z-index:999;transform:translateX(300px);transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);max-width:250px;box-shadow:0 8px 28px rgba(251,191,36,0.25);}
-.achieve.show{transform:translateX(0);}
-.achieve h4{color:var(--a4);font-size:0.68rem;letter-spacing:1px;margin-bottom:5px;}
-.achieve p{font-size:0.86rem;font-weight:700;}
+/* ACHIEVEMENT — removed */
 </style>
 <style>
 
@@ -504,18 +500,6 @@ header{
     z-index:201;
   }
 
-  /* ── ACHIEVEMENT TOAST — top of screen, never blocks UI ── */
-  .achieve{
-    position:fixed;
-    top:calc(58px + env(safe-area-inset-top));
-    left:8px; right:8px;
-    bottom:auto; max-width:none;
-    transform:translateY(calc(-100% - 20px));
-    transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
-    z-index:998;
-  }
-  .achieve.show{ transform:translateY(0); }
-
   /* ── PROFILE SCREEN ── */
   .profile-screen{
     padding:calc(20px + env(safe-area-inset-top)) 14px
@@ -652,8 +636,6 @@ header{
 </div>
 
 <!-- ACHIEVEMENT TOAST -->
-<div class="achieve" id="achieve"><h4>🏆 ACHIEVEMENT UNLOCKED</h4><p id="achieveTxt">Amazing!</p></div>
-
 <!-- HEADER -->
 <header>
   <div class="logo-wrap">
@@ -1315,12 +1297,7 @@ function addStars(n){
 }
 
 function showAchieve(txt){
-  const el=document.getElementById('achieve');
-  const te=document.getElementById('achieveTxt');
-  if(!el||!te) return;
-  te.textContent=txt;
-  el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),4000);
+  // Achievement banner removed — stars still tracked silently
 }
 
 // ═══════════════════════════════════════
